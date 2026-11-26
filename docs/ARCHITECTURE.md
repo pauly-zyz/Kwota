@@ -9,7 +9,7 @@
 
 ```mermaid
 flowchart LR
-  T[Trader di Pons V2<br/>pair KWOTA/ANT] -- fee --> TR[(Wallet Treasury)]
+  T[Trader di Pons V2<br/>pair KWOTA/ANT] -- fee langsung --> TR[(Wallet dev = Treasury)]
   TR -- indexer mencatat inflow --> DB[(PostgreSQL)]
   ADM[Admin wallet<br/>tanda tangan sendiri] -- swap manual + catat tx --> POOL[(Pool Kwota<br/>stablecoin)]
   ADM -- beli ANT --> VAULT[(Vault ANT<br/>publik)]
@@ -92,9 +92,11 @@ Proses runtime (satu codebase `apps/api`, beberapa entrypoint):
 
 ### 3.A Pembukuan fee & pool
 
-**Indexer treasury**
-- Memantau event `Transfer(from, to=TREASURY)` pada daftar token yang dilacak (config: `TRACKED_FEE_TOKENS`, mis. ANT, $KWOTA, WETH, USDG).
-- ETH native tidak menghasilkan log → dideteksi via selisih saldo per blok + API Blockscout (internal tx). *Tergantung jawaban: fee Pons masuk dalam token apa.*
+**Indexer treasury (= wallet dev)**
+- Fee trading Pons masuk **langsung ke wallet dev**; wallet ini diperlakukan sebagai treasury (`TREASURY_ADDRESS` = alamat wallet dev, di config).
+- Memantau event `Transfer(from, to=TREASURY)` pada daftar token yang dilacak (config: `TRACKED_FEE_TOKENS`, mis. ANT, $KWOTA, WETH, USDG) serta ETH native (tidak menghasilkan log → dideteksi via API Blockscout untuk tx/internal tx ke alamat tersebut). Daftar token cukup diubah di config, tanpa ubah kode.
+- Karena wallet dev bisa juga menerima transfer yang bukan fee (mis. setoran pribadi), setiap inflow punya klasifikasi `fee | non_fee`. Default `fee`; admin bisa menandai `non_fee` dari dashboard (tercatat di audit log dan tetap tampil di halaman transparansi, sehingga publik tahu alasannya).
+- Wallet dev dimasukkan ke `excluded_addresses` (tidak ikut perhitungan kwota).
 - Setiap inflow → baris `treasury_inflows`, lalu otomatis dipecah ke 3 *bucket* (`fee_allocations`) sesuai `fee_split` versi saat itu. Pecahan ini **pembukuan**, bukan transfer otomatis.
 
 **Swap manual (MVP)**
@@ -211,7 +213,7 @@ Konvensi: `*_micro` = `bigint` µkwota; `*_raw` = `numeric(78,0)` jumlah token d
 | `indexer_cursors` | `name` PK, `chain_id`, `last_block`, `last_block_hash` | deteksi reorg |
 | `token_transfers` | `chain_id, tx_hash, log_index` (unik), `block_number`, `block_hash`, `block_time`, `token`, `from`, `to`, `amount_raw` | semua Transfer $KWOTA (+ token fee yang dilacak) |
 | `holder_balances` | `address` PK, `balance_raw`, `last_block` | cache saldo terkini, bisa dibangun ulang dari transfers |
-| `treasury_inflows` | `id`, `transfer_id` FK / `native_tx`, `token`, `amount_raw`, `usd_estimate_micro` (nullable), `block_time` | |
+| `treasury_inflows` | `id`, `transfer_id` FK / `native_tx`, `token`, `amount_raw`, `usd_estimate_micro` (nullable), `block_time`, `classification enum(fee,non_fee)`, `classified_by`, `classification_note` | treasury = wallet dev |
 | `fee_allocations` | `id`, `inflow_id`, `bucket enum(pool,vault,ops)`, `amount_raw`, `split_version` | pembukuan |
 | `swaps` | `id`, `bucket`, `tx_hash`, `from_token`, `from_amount_raw`, `to_token`, `to_amount_raw`, `to_address`, `recorded_by`, `verified`, `verified_at`, `note` | diverifikasi dari receipt |
 | `provider_topups` | `id`, `provider`, `amount_micro`, `proof_ref` (tx hash/invoice id), `recorded_by` | |

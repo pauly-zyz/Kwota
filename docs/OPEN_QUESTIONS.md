@@ -3,8 +3,8 @@
 Format: **[ID] Pertanyaan** — *usulan default saya* (dipakai bila Anda setuju / belum ada jawaban).
 🔴 = memblokir milestone berikutnya, 🟡 = dibutuhkan sebelum milestone terkait, ⚪ = bisa diputuskan nanti.
 
-## Fee & pool (Pons V2)
-- 🔴 **[F1] Bagaimana mekanisme fee Pons V2?** Fee masuk ke treasury dalam token apa (ANT, $KWOTA, ETH, campuran)? Otomatis per trade atau harus di-*claim*? Apakah ada fase bonding curve sebelum pool DEX (alamat yang harus dikecualikan berbeda)? — *Saya butuh tautan dokumentasi Pons atau contoh tx fee di Blockscout.*
+## Fee & pool
+> ~~[F1] Mekanisme fee Pons V2~~ — **terjawab:** fee trading masuk langsung ke wallet dev, yang berperan sebagai treasury. Indexer cukup memantau wallet dev tersebut.
 - 🟡 **[F2] Split fee final.** — *50% Pool / 30% Vault ANT / 20% Operasional.*
 - 🟡 **[F3] Stablecoin untuk Pool:** USDG atau lainnya? Alamat resmi dari docs Robinhood Chain (saya tidak akan menebak). — *USDG; Anda konfirmasi alamatnya, atau izinkan saya mengambilnya dari docs.robinhood.com/chain di milestone 3.*
 - 🟡 **[F4] Vault ANT berupa apa?** — *Safe multisig terpisah (bukan kontrak custom) — saldo ANT dibaca on-chain. Kontrak vault time-lock bisa fase 2.*
@@ -35,7 +35,7 @@ Format: **[ID] Pertanyaan** — *usulan default saya* (dipakai bila Anda setuju 
 - ⚪ **[A4] Batas jumlah agen per holder?** — *10.*
 
 ## Lainnya
-- 🟡 **[O1] Alamat yang dibutuhkan:** kontrak $KWOTA (setelah launch), treasury, pool/vault/ops wallet, admin wallet(s), alamat LP pair. Untuk testnet: saya deploy token tiruan — setuju?
+- 🟡 **[O1] Alamat yang dibutuhkan:** kontrak $KWOTA (setelah launch), wallet dev (treasury), pool/vault/ops wallet, admin wallet(s), alamat LP pair. Untuk testnet: saya deploy token tiruan — setuju?
 - 🟡 **[O2] RPC endpoint** testnet/mainnet: publik atau penyedia khusus?
 - ⚪ **[O3] Domain & handle X.**
 - ⚪ **[O4] Hosting:** — *Web di Vercel; API/indexer/worker + Postgres + Redis di Railway/Fly/VPS (proses long-running, jadi bukan serverless).*
