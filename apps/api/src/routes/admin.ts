@@ -30,7 +30,7 @@ export async function adminRoutes(app: FastifyInstance, ctx: Ctx) {
       ctx.db.select().from(tables.providerTopups).orderBy(desc(tables.providerTopups.id)).limit(50),
     ]);
     const mismatches = await ctx.ledger.reconcile();
-    return toJson({ params, defaults: DEFAULT_PARAMS, exclusions, audit: auditRows, epochs, inflows, models, registries, swaps, topups, ledgerMismatches: mismatches, env: { chainId: ctx.env.CHAIN_ID, autoPublish: ctx.env.AUTO_PUBLISH_EPOCHS } });
+    return toJson({ params, defaults: DEFAULT_PARAMS, exclusions, audit: auditRows, epochs, inflows, models, registries, swaps, topups, ledgerMismatches: mismatches, env: { chainId: ctx.env.CHAIN_ID, autoPublish: ctx.env.AUTO_PUBLISH_EPOCHS, allowAdjust: ctx.env.ALLOW_ADMIN_ADJUST } });
   });
 
   /** Helper: authenticate admin, verify signed action, run, audit. */
@@ -116,6 +116,17 @@ export async function adminRoutes(app: FastifyInstance, ctx: Ctx) {
     const [before] = await ctx.db.select().from(tables.models).where(eq(tables.models.id, p.id));
     await ctx.db.insert(tables.models).values(v).onConflictDoUpdate({ target: tables.models.id, set: v });
     return { targetType: "model", targetId: p.id, before };
+  }));
+
+  app.post("/admin/adjust", signed("adjust_balance", z.object({ address, amount: z.string().regex(/^-?\d+(\.\d{1,6})?$/), note: z.string().min(3).max(200) }), async (p, admin) => {
+    if (!ctx.env.ALLOW_ADMIN_ADJUST) throw badRequest("balance adjustments are disabled (ALLOW_ADMIN_ADJUST=false)");
+    const neg = p.amount.startsWith("-");
+    const delta = parseKwota(neg ? p.amount.slice(1) : p.amount) * (neg ? -1n : 1n);
+    const user = await ctx.ledger.ensureUser(p.address);
+    const acc = await ctx.ledger.holderAccount(user.id);
+    const entry = await ctx.ledger.post({ accountId: acc.id, deltaMicro: delta, kind: "admin_adjust", refType: "admin", refId: `${Date.now()}:${p.address}`, actor: `admin:${admin}` });
+    await ctx.kv.del("public:overview");
+    return { targetType: "account", targetId: p.address, after: { delta: delta.toString(), balance: entry.balanceAfterMicro.toString(), note: p.note }, result: entry };
   }));
 
   app.post("/admin/registries", signed("upsert_registry", z.object({ address, name: z.string().min(1).max(64), adapter: z.enum(["erc8004_v1"]).default("erc8004_v1"), enabled: z.boolean().default(true) }), async (p) => {

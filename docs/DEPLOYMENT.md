@@ -49,7 +49,23 @@ Repo sudah punya `vercel.json` di root (build `@kwota/web`, output statis `apps/
 | `NEXT_PUBLIC_VAULT_ADDRESS` | wallet/Safe vault ANT |
 | `NEXT_PUBLIC_PONS_URL`, `NEXT_PUBLIC_DEXSCREENER_URL`, `NEXT_PUBLIC_X_URL` | tautan |
 
-## 3. API + indexer + worker
+## 3a. Backend sekali klik (Render)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/pauly-zyz/Kwota)
+
+`render.yaml` membuat: Postgres, Redis (Key Value) dan satu web service `kwota-api` (Docker) yang menjalankan API + indexer + worker
+dalam satu proses (`RUN_INDEXER`, `RUN_WORKER`), migrasi dan seed model otomatis (`AUTO_SEED`).
+
+1. Login Render dengan GitHub, beri akses ke repo, klik tombol di atas.
+2. Isi secret yang diminta: `PROVIDER_API_KEY` (key penyedia model), `ADMIN_ADDRESSES` (wallet admin Anda). `KWOTA_TOKEN_ADDRESS` / `TREASURY_ADDRESS` boleh kosong sampai launch.
+3. Setelah live, buka `https://<nama-service>.onrender.com/health` → `{"ok":true}`.
+4. Di Vercel set `NEXT_PUBLIC_API_URL=https://<nama-service>.onrender.com` lalu redeploy. App otomatis keluar dari mode demo.
+5. Admin → "Credit tester kwota" untuk memberi saldo uji ke wallet (testnet).
+
+Catatan: plan free Render tidur setelah 15 menit tanpa trafik (request pertama lambat) dan Postgres free kedaluwarsa setelah 30 hari —
+pindah ke plan berbayar sebelum launch. `CORS_ORIGINS` default `https://kwota*.vercel.app`; ganti dengan domain persis Anda.
+
+## 3. API + indexer + worker (hosting lain)
 
 Proses long-running (bukan serverless). Satu image Docker (`Dockerfile`), tiga perintah:
 

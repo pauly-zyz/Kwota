@@ -3,6 +3,7 @@ import { createSiweMessage, parseSiweMessage, validateSiweMessage } from "viem/s
 import { verifyMessage, type PublicClient } from "viem";
 import type { Kv } from "../lib/kv";
 import { unauthorized } from "../lib/errors";
+import { domainAllowed } from "../lib/origins";
 
 export async function issueNonce(kv: Kv): Promise<string> {
   const nonce = randomBytes(12).toString("hex");
@@ -27,7 +28,7 @@ export async function verifySiwe(opts: {
   const parsed = parseSiweMessage(opts.message);
   if (!parsed.address || !parsed.nonce) throw unauthorized("malformed SIWE message");
   if (parsed.chainId !== opts.chainId) throw unauthorized("wrong chain");
-  if (opts.domain.length && !opts.domain.includes(parsed.domain ?? "")) throw unauthorized("domain not allowed");
+  if (!domainAllowed(opts.domain, parsed.domain ?? "")) throw unauthorized("domain not allowed");
   if (!validateSiweMessage({ message: parsed })) throw unauthorized("SIWE message expired or not yet valid");
   const fresh = await opts.kv.get(`siwe:nonce:${parsed.nonce}`);
   if (!fresh) throw unauthorized("unknown or used nonce");

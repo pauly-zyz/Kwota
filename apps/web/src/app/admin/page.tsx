@@ -81,6 +81,7 @@ function AdminInner() {
         <ExclusionsCard rows={s.exclusions} act={act} />
         <RegistryCard rows={s.registries} act={act} />
       </div>
+      {s.env.allowAdjust && <AdjustCard act={act} />}
       <ModelsCard rows={s.models} act={act} />
       <Card title="Audit log">
         <div className="max-h-96 overflow-y-auto">
@@ -331,6 +332,21 @@ function RegistryCard({ rows, act }: { rows: Any[]; act: Act }) {
           <li key={r.id} className="flex justify-between py-2"><span className="text-fog-100">{r.name}</span><span className="font-mono text-fog">{short(r.address, 6)} {r.enabled ? "" : "(off)"}</span></li>
         ))}
       </ul>
+    </Card>
+  );
+}
+
+function AdjustCard({ act }: { act: Act }) {
+  const [f, setF] = useState({ address: "", amount: "", note: "" });
+  return (
+    <Card title="Credit tester kwota (testnet only)">
+      <p className="mb-3 text-xs text-fog">Adds (or with a minus sign removes) kwota for a wallet. Signed, audited and visible in the ledger. Disable with ALLOW_ADMIN_ADJUST=false on mainnet.</p>
+      <div className="grid gap-2 sm:grid-cols-[1fr_140px_1fr_auto]">
+        <Input placeholder="0x… wallet" value={f.address} onChange={(e) => setF({ ...f, address: e.target.value.trim() })} />
+        <Input placeholder="amount, e.g. 5" value={f.amount} onChange={(e) => setF({ ...f, amount: e.target.value.trim() })} />
+        <Input placeholder="note (required)" value={f.note} onChange={(e) => setF({ ...f, note: e.target.value })} />
+        <Button disabled={!/^0x[0-9a-fA-F]{40}$/.test(f.address) || !/^-?\d+(\.\d{1,6})?$/.test(f.amount) || f.note.length < 3 || act.isPending} onClick={() => act.mutate({ action: "adjust_balance", path: "/admin/adjust", payload: f })}>Sign & credit</Button>
+      </div>
     </Card>
   );
 }

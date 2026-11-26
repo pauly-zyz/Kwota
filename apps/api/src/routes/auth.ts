@@ -3,9 +3,10 @@ import type { FastifyInstance } from "fastify";
 import type { Ctx } from "../context";
 import { issueNonce, verifySiwe } from "../auth/siwe";
 import { signSession } from "../auth/session";
+import { parseOrigins } from "../lib/origins";
 
 export async function authRoutes(app: FastifyInstance, ctx: Ctx) {
-  const domains = ctx.env.CORS_ORIGINS.split(",").map((o) => o.trim().replace(/^https?:\/\//, "").replace(/\/$/, "")).filter(Boolean);
+  const domains = parseOrigins(ctx.env.CORS_ORIGINS);
 
   app.get("/auth/nonce", async () => ({ nonce: await issueNonce(ctx.kv) }));
 

@@ -44,7 +44,19 @@ export const envSchema = z.object({
   EPOCH_GENESIS_TIME: z.coerce.number().default(0),
   AUTO_PUBLISH_EPOCHS: bool,
 
-  MODEL_PROVIDER: z.enum(["openrouter", "mock"]).default("mock"),
+  MODEL_PROVIDER: z.enum(["openrouter", "openai_compatible", "mock"]).default("mock"),
+  // Generic OpenAI-compatible provider (e.g. Surplus Intelligence)
+  PROVIDER_ID: z.string().regex(/^[a-z0-9_-]{2,32}$/).default("surplus"),
+  PROVIDER_BASE_URL: z.string().default(""),
+  PROVIDER_API_KEY: z.string().default(""),
+  /** comma-separated provider model ids imported by `seed` (with the provider's own per-token pricing) */
+  SEED_MODELS: z.string().default(""),
+  /** run indexer + epoch worker inside the API process (single-service hosting) */
+  RUN_INDEXER: bool,
+  RUN_WORKER: bool,
+  AUTO_SEED: bool,
+  /** testnet convenience: admin can credit/debit kwota with a signed, audited action */
+  ALLOW_ADMIN_ADJUST: bool,
   OPENROUTER_API_KEY: z.string().default(""),
   OPENROUTER_BASE_URL: z.string().default("https://openrouter.ai/api/v1"),
   OPENROUTER_APP_NAME: z.string().default("KWOTA"),

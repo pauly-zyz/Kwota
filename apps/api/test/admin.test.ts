@@ -61,6 +61,11 @@ describe("admin auth", () => {
     expect((await post("/admin/exclusions", body)).statusCode).toBe(401);
   });
 
+  it("adjust_balance is refused unless enabled", async () => {
+    const res = await post("/admin/adjust", await signedAction("adjust_balance", { address: holder.address, amount: "5", note: "tester credit" }));
+    expect(res.statusCode).toBe(400);
+  });
+
   it("action name is bound to the signature", async () => {
     const body = await signedAction("add_exclusion", { address: "0x00000000000000000000000000000000000bad02", reason: "blacklist" });
     expect((await post("/admin/params", body)).statusCode).toBe(401);

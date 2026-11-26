@@ -22,6 +22,8 @@ docker compose up -d
 pnpm test
 ```
 
+Backend sekali klik: [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/pauly-zyz/Kwota)
+
 Detail: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) · Arsitektur: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) ·
 Keputusan: [`docs/OPEN_QUESTIONS.md`](docs/OPEN_QUESTIONS.md) · Sebelum mainnet: [`docs/MAINNET_CHECKLIST.md`](docs/MAINNET_CHECKLIST.md)
 

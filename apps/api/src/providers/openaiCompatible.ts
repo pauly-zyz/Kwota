@@ -1,11 +1,21 @@
 import type { ChatResult, ChatStream, ModelProvider, ProviderChatRequest, StreamChunk, Usage } from "./types";
 import { ProviderError } from "./types";
 
-/** OpenRouter (OpenAI-compatible) provider. API key lives only in server env. */
-export class OpenRouterProvider implements ModelProvider {
-  id = "openrouter";
-  constructor(private opts: { apiKey: string; baseUrl: string; appName: string; referer?: string }) {
-    if (!opts.apiKey) throw new Error("OPENROUTER_API_KEY missing");
+/**
+ * Any OpenAI-compatible chat-completions provider (OpenRouter, Surplus Intelligence, …).
+ * The API key lives only in server env.
+ */
+export class OpenAICompatibleProvider implements ModelProvider {
+  id: string;
+  constructor(private opts: { id: string; apiKey: string; baseUrl: string; appName: string; referer?: string; openrouterUsage?: boolean }) {
+    if (!opts.apiKey) throw new Error(`API key for provider '${opts.id}' missing`);
+    this.id = opts.id;
+    this.opts.baseUrl = opts.baseUrl.replace(/\/$/, "");
+  }
+
+  /** OpenRouter wants `usage: {include: true}`; other providers may reject unknown fields. */
+  private extra() {
+    return this.opts.openrouterUsage ? { usage: { include: true } } : {};
   }
 
   private headers() {
@@ -21,7 +31,7 @@ export class OpenRouterProvider implements ModelProvider {
     const res = await fetch(`${this.opts.baseUrl}/chat/completions`, {
       method: "POST",
       headers: this.headers(),
-      body: JSON.stringify({ ...req, stream: false, usage: { include: true } }),
+      body: JSON.stringify({ ...req, ...this.extra(), stream: false }),
       signal,
     });
     if (!res.ok) throw new ProviderError(res.status, (await res.text()).slice(0, 500));
@@ -37,7 +47,7 @@ export class OpenRouterProvider implements ModelProvider {
     const res = await fetch(`${this.opts.baseUrl}/chat/completions`, {
       method: "POST",
       headers: this.headers(),
-      body: JSON.stringify({ ...req, stream: true, usage: { include: true }, stream_options: { include_usage: true } }),
+      body: JSON.stringify({ ...req, ...this.extra(), stream: true, stream_options: { include_usage: true } }),
       signal,
     });
     if (!res.ok || !res.body) throw new ProviderError(res.status, (await res.text()).slice(0, 500));

@@ -3,6 +3,7 @@ import cors from "@fastify/cors";
 import { ZodError } from "zod";
 import type { Ctx } from "./context";
 import { HttpError } from "./lib/errors";
+import { originAllowed, parseOrigins } from "./lib/origins";
 import { gatewayRoutes } from "./gateway/routes";
 import { authRoutes } from "./routes/auth";
 import { meRoutes } from "./routes/me";
@@ -25,12 +26,12 @@ export async function buildApp(ctx: Ctx, opts: { logger?: boolean } = {}) {
     }
   });
 
-  const origins = ctx.env.CORS_ORIGINS.split(",").map((s) => s.trim()).filter(Boolean);
+  const origins = parseOrigins(ctx.env.CORS_ORIGINS);
   await app.register(cors, {
     origin: (origin, cb) => {
       if (!origin) return cb(null, true);
       // /v1 gateway is called server-to-server with API keys; browser access only from allowed origins
-      cb(null, origins.includes("*") || origins.includes(origin));
+      cb(null, originAllowed(origins, origin));
     },
     allowedHeaders: ["authorization", "content-type", "x-kwota-agent", "x-kwota-registry", "x-kwota-nonce", "x-kwota-expiry", "x-kwota-signature"],
     exposedHeaders: ["x-kwota-cost-micro", "x-kwota-balance-micro", "x-kwota-request-id"],
