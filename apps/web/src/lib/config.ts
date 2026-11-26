@@ -45,3 +45,9 @@ export const chain = defineChain({
 
 export const explorerTx = (h: string) => (config.explorerUrl ? `${config.explorerUrl}/tx/${h}` : undefined);
 export const explorerAddr = (a: string) => (config.explorerUrl ? `${config.explorerUrl}/address/${a}` : undefined);
+
+/** Absolute API base for display/snippets (apiUrl may be relative, e.g. "/api"). */
+export function absoluteApiUrl(): string {
+  if (/^https?:\/\//.test(config.apiUrl)) return config.apiUrl;
+  return typeof window !== "undefined" ? `${window.location.origin}${config.apiUrl}` : `https://<your-domain>${config.apiUrl}`;
+}

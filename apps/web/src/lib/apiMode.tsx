@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { config, demoMode as currentDemo, setDemoMode } from "./config";
+import { absoluteApiUrl, config, demoMode as currentDemo, setDemoMode } from "./config";
 
 const Ctx = createContext(true);
 const CACHE = "kwota.apiReady";
@@ -48,3 +48,12 @@ export function ApiModeProvider({ children }: { children: ReactNode }) {
 }
 
 export const useDemo = () => useContext(Ctx);
+
+/** Absolute API base URL, hydration-safe (resolved after mount). */
+export function useApiBase() {
+  const [base, setBase] = useState(`https://<your-domain>${config.apiUrl}`);
+  useEffect(() => {
+    setBase(absoluteApiUrl());
+  }, []);
+  return base;
+}

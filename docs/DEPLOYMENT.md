@@ -49,6 +49,12 @@ Repo sudah punya `vercel.json` di root (build `@kwota/web`, output statis `apps/
 | `NEXT_PUBLIC_VAULT_ADDRESS` | wallet/Safe vault ANT |
 | `NEXT_PUBLIC_PONS_URL`, `NEXT_PUBLIC_DEXSCREENER_URL`, `NEXT_PUBLIC_X_URL` | tautan |
 
+## Status deploy saat ini
+
+- Web + API: https://kwota-vert.vercel.app (API di `/api`, health: `/api/health`)
+- Database: Neon Postgres (dibuat via neon.new — **klaim dalam 72 jam** lewat claim URL yang dikirim di chat, atau ganti `DATABASE_URL` dengan database permanen)
+- Env Vercel terpasang: `DATABASE_URL`, `PROVIDER_API_KEY`, `CRON_SECRET`, `CHAIN_ID`. Belum: `ADMIN_ADDRESSES`.
+
 ## 3. Backend di Vercel (project yang sama — disarankan)
 
 API ikut ter-deploy sebagai Vercel Function di `/api` (file `api/index.js`, hasil bundle `apps/api/src/vercel.ts`).

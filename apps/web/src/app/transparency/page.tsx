@@ -5,7 +5,7 @@ import { Badge, Bar, Card, Empty, Stat } from "@/components/ui";
 import { DemoBanner } from "@/components/DemoBanner";
 import { Meter } from "@/components/Meter";
 import { config, explorerAddr, explorerTx } from "@/lib/config";
-import { useDemo } from "@/lib/apiMode";
+import { useApiBase, useDemo } from "@/lib/apiMode";
 import { bps, dateTime, kwota, short, token, usd } from "@/lib/format";
 import { useEpochs, useModels, useOverview, useSwaps } from "@/lib/hooks";
 
@@ -21,6 +21,7 @@ const tokenName = (a: string | null | undefined) => {
 
 export default function Transparency() {
   const demoMode = useDemo();
+  const apiBase = useApiBase();
   const { data: o } = useOverview();
   const { data: epochs } = useEpochs();
   const { data: models } = useModels();
@@ -152,7 +153,7 @@ export default function Transparency() {
                   <td className="py-2.5 pr-4 font-mono text-xs text-fog">{e.merkleRoot ? short(e.merkleRoot, 6) : "—"}</td>
                   <td className="py-2.5 font-mono text-xs">
                     {e.merkleRoot && !demoMode ? (
-                      <a className="text-volt hover:underline" href={`${config.apiUrl}/public/epochs/${e.id}/snapshot`} target="_blank" rel="noreferrer">json</a>
+                      <a className="text-volt hover:underline" href={`${apiBase}/public/epochs/${e.id}/snapshot`} target="_blank" rel="noreferrer">json</a>
                     ) : (
                       <span className="text-fog">—</span>
                     )}
@@ -228,7 +229,7 @@ export default function Transparency() {
         )}
         <p className="mt-6 text-xs text-fog">
           Excluded from kwota: LP pair, treasury (dev wallet), pool, vault and ops wallets, burn addresses and the public blacklist. Verify any epoch yourself:
-          <code className="ml-1 rounded bg-ink-900 px-1.5 py-0.5 text-fog-100">pnpm verify-epoch -- --api {config.apiUrl ?? "<api>"} --epoch N --rpc &lt;rpc&gt;</code>
+          <code className="ml-1 rounded bg-ink-900 px-1.5 py-0.5 text-fog-100">pnpm verify-epoch -- --api {apiBase} --epoch N --rpc &lt;rpc&gt;</code>
         </p>
       </Card>
     </div>

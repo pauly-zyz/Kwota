@@ -3,12 +3,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Badge, Button, Card, Copy, Empty, ErrorNote, Input } from "@/components/ui";
 import { api } from "@/lib/api";
-import { config } from "@/lib/config";
+import { useApiBase } from "@/lib/apiMode";
 import { dateTime, kwota } from "@/lib/format";
 
 interface Key { id: number; name: string; prefix: string; agentId: number | null; createdAt: string; lastUsedAt: string | null; revokedAt: string | null; maxCostPerRequestMicro: string | null }
 
 export default function Keys() {
+  const apiBase = useApiBase();
   const qc = useQueryClient();
   const keys = useQuery({ queryKey: ["keys"], queryFn: () => api<Key[]>("/me/keys") });
   const [name, setName] = useState("");
@@ -86,7 +87,7 @@ export default function Keys() {
       <Card title="Quick start">
         <pre className="overflow-x-auto rounded-xl bg-ink-900 p-4 text-xs leading-relaxed text-fog-100"><code>{`from openai import OpenAI
 
-client = OpenAI(base_url="${config.apiUrl ?? "https://api.<kwota-domain>"}/v1", api_key="kw_live_…")
+client = OpenAI(base_url="${apiBase}/v1", api_key="kw_live_…")
 r = client.chat.completions.create(
     model="openai/gpt-4o-mini",
     messages=[{"role": "user", "content": "Hello from my kwota!"}],

@@ -1,6 +1,7 @@
+"use client";
 import { config } from "@/lib/config";
+import { useApiBase } from "@/lib/apiMode";
 
-const base = `${config.apiUrl ?? "https://api.<kwota-domain>"}/v1`;
 
 function Code({ children }: { children: string }) {
   return <pre className="mt-3 overflow-x-auto rounded-xl border border-line bg-ink-900 p-4 text-xs leading-relaxed text-fog-100"><code>{children}</code></pre>;
@@ -11,6 +12,8 @@ function H({ id, children }: { id: string; children: React.ReactNode }) {
 }
 
 export default function Docs() {
+  const api = useApiBase();
+  const base = `${api}/v1`;
   return (
     <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-[200px_1fr]">
       <aside className="hidden md:block">
@@ -108,7 +111,7 @@ await fetch("${base}/chat/completions", {
         <H id="verify">Verify an epoch yourself</H>
         <p className="mt-2">Each epoch publishes a JSON snapshot, its SHA-256 and a Merkle root. The verifier re-derives every allocation from on-chain Transfer events:</p>
         <Code>{`git clone <kwota repo> && cd kwota && pnpm install
-pnpm --filter @kwota/api verify-epoch -- --api ${config.apiUrl ?? "<api>"} --epoch 12 --rpc <robinhood-chain-rpc> --from-block <token deploy block>`}</Code>
+pnpm --filter @kwota/api verify-epoch -- --api ${api} --epoch 12 --rpc <robinhood-chain-rpc> --from-block <token deploy block>`}</Code>
         <p className="mt-3">Leaf encoding (OpenZeppelin StandardMerkleTree): <code className="text-fog-100">(uint256 epochId, address holder, uint256 twab, uint256 kwotaMicro)</code>. Proofs: <code>GET /public/epochs/:id/proof/:address</code>.</p>
       </article>
     </div>
