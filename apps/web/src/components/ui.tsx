@@ -7,7 +7,7 @@ export function cn(...c: (string | false | null | undefined)[]) {
 
 export function Card({ children, className, title, action }: { children: ReactNode; className?: string; title?: ReactNode; action?: ReactNode }) {
   return (
-    <section className={cn("rounded-2xl border border-line bg-ink-800/80 p-5", className)}>
+    <section className={cn("glass p-5", className)}>
       {(title || action) && (
         <header className="mb-4 flex items-center justify-between gap-3">
           {title && <h3 className="text-sm font-medium uppercase tracking-[0.14em] text-fog">{title}</h3>}
@@ -38,7 +38,7 @@ export function Button({ variant = "primary", className, ...p }: ButtonHTMLAttri
       {...p}
       className={cn(
         "inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50",
-        variant === "primary" && "bg-volt text-ink hover:bg-volt-600",
+        variant === "primary" && "bg-volt text-ink shadow-[0_0_24px_-8px_rgba(200,242,58,0.8)] hover:bg-volt-600",
         variant === "ghost" && "border border-line text-fog-100 hover:border-fog/60 hover:bg-ink-700",
         variant === "danger" && "border border-danger/50 text-danger hover:bg-danger/10",
         className,

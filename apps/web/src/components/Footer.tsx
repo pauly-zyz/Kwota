@@ -4,7 +4,7 @@ import { config } from "@/lib/config";
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-line">
+    <footer className="relative mt-24 border-t border-white/5 bg-gradient-to-b from-transparent to-black/40">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <Logo />
