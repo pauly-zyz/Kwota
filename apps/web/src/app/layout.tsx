@@ -18,10 +18,18 @@ const display = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.kwotacredit.xyz"),
   title: "KWOTA — Your AI kwota, funded by every trade",
   description: "Every $KWOTA trade funds a pool of AI inference credits. Holders and their ERC-8004 agents spend kwota on AI models — fully transparent, on Robinhood Chain.",
   icons: { icon: "/favicon.svg" },
-  openGraph: { title: "KWOTA", description: "Your AI kwota, funded by every trade.", type: "website" },
+  openGraph: {
+    title: "KWOTA — Your AI kwota, funded by every trade",
+    description: "Every $KWOTA trade funds AI inference credits for holders and their agents.",
+    type: "website",
+    url: "/",
+    images: [{ url: "/og.png", width: 1500, height: 500, alt: "KWOTA" }],
+  },
+  twitter: { card: "summary_large_image", title: "KWOTA", description: "Your AI kwota, funded by every trade.", images: ["/og.png"] },
 };
 
 export const viewport: Viewport = { themeColor: "#0B0D0C", width: "device-width", initialScale: 1 };
