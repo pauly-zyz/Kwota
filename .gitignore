@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+dist
+coverage
+.env
+.env.*
+!.env.example
+*.log
+.turbo
+.vercel
+packages/contracts/out
+packages/contracts/cache
+packages/contracts/broadcast
+snapshots/

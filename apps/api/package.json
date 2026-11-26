@@ -1,0 +1,34 @@
+{
+  "name": "@kwota/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "indexer": "tsx src/indexer/main.ts",
+    "worker": "tsx src/epoch/main.ts",
+    "seed": "tsx src/seed.ts",
+    "verify-epoch": "tsx src/epoch/verify.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@kwota/config": "workspace:*",
+    "@kwota/core": "workspace:*",
+    "@kwota/db": "workspace:*",
+    "drizzle-orm": "^0.36.4",
+    "fastify": "^5.1.0",
+    "ioredis": "^5.4.1",
+    "postgres": "^3.4.5",
+    "tsx": "^4.19.2",
+    "viem": "^2.21.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}

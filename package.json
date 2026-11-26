@@ -1,0 +1,22 @@
+{
+  "name": "kwota",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "dev:web": "pnpm --filter @kwota/web dev",
+    "dev:api": "pnpm --filter @kwota/api dev",
+    "dev:indexer": "pnpm --filter @kwota/api indexer",
+    "dev:worker": "pnpm --filter @kwota/api worker",
+    "db:migrate": "pnpm --filter @kwota/db migrate",
+    "db:generate": "pnpm --filter @kwota/db generate"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

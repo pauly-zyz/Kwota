@@ -1,0 +1,1 @@
+ALTER TABLE "indexer_cursors" ADD COLUMN "last_block_time" integer DEFAULT 0 NOT NULL;
