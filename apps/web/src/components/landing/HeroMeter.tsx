@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
  * The hero instrument: a large 240° gauge with a sweeping needle, live digital
  * readout and a requests ticker — the "kwota meter" brand moment.
  */
-export function HeroMeter() {
+export function HeroMeter({ variant = "glass" }: { variant?: "glass" | "square" }) {
+  const sq = variant === "square";
   const [pct, setPct] = useState(0);
   const [kw, setKw] = useState(0);
   const [log, setLog] = useState<{ id: number; model: string; tok: number; cost: number }[]>([]);
@@ -50,8 +51,9 @@ export function HeroMeter() {
 
   return (
     <div className="relative mx-auto w-full max-w-[460px]">
-      <div className="absolute -inset-10 rounded-full bg-volt/10 blur-3xl animate-pulseGlow" />
-      <div className="glass relative p-6 sm:p-8">
+      <div className={`absolute -inset-10 bg-volt/10 blur-3xl animate-pulseGlow ${sq ? "" : "rounded-full"}`} />
+      <div className={sq ? "relative border border-white/10 bg-black/80 p-6 sm:p-8" : "glass relative p-6 sm:p-8"}>
+        {sq && <div className="scanlines pointer-events-none absolute inset-0" />}
         <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-fog">
           <span>kwota meter · epoch #22</span>
           <span className="flex items-center gap-1.5 text-volt">
@@ -106,7 +108,7 @@ export function HeroMeter() {
             <circle cx={C + 96} cy={C} r="3" fill="#C8F23A" filter="url(#hm-glow)" />
           </g>
           <circle cx={C} cy={C} r="11" fill="#0b0d0c" stroke="#C8F23A" strokeWidth="3" />
-          <text x={C} y={C + 52} textAnchor="middle" fontSize="38" fill="#E7EBE8" fontFamily="var(--font-geist-mono)" style={{ fontVariantNumeric: "tabular-nums" }}>
+          <text x={C} y={C + 52} textAnchor="middle" fontSize={sq ? 44 : 38} fontWeight={sq ? 600 : 400} fill="#E7EBE8" fontFamily={sq ? "var(--font-display)" : "var(--font-geist-mono)"} style={{ fontVariantNumeric: "tabular-nums" }}>
             {balance.toFixed(2)}
           </text>
           <text x={C} y={C + 70} textAnchor="middle" fontSize="9" letterSpacing="2.5" fill="#9BA39E" fontFamily="var(--font-geist-mono)">
@@ -119,13 +121,13 @@ export function HeroMeter() {
             ["metered", kw.toFixed(4)],
             ["agents", "2 live"],
           ].map(([k, v]) => (
-            <div key={k} className="rounded-xl border border-white/5 bg-black/30 px-2 py-2">
+            <div key={k} className={`border border-white/5 bg-black/30 px-2 py-2 ${sq ? "" : "rounded-xl"}`}>
               <div className="text-[10px] uppercase tracking-wider text-fog">{k}</div>
-              <div className="mt-0.5 font-mono text-sm text-fog-100 tabular-nums">{v}</div>
+              <div className={`mt-0.5 text-sm text-fog-100 tabular-nums ${sq ? "font-display font-semibold" : "font-mono"}`}>{v}</div>
             </div>
           ))}
         </div>
-        <div className="mt-3 h-[104px] overflow-hidden rounded-xl border border-white/5 bg-black/40 p-3 font-mono text-[11px] leading-6">
+        <div className={`mt-3 h-[104px] overflow-hidden border border-white/5 bg-black/40 p-3 font-mono text-[11px] leading-6 ${sq ? "" : "rounded-xl"}`}>
           {log.length === 0 && <div className="text-fog">waiting for requests…</div>}
           {log.map((r, i) => (
             <div key={r.id} className="flex justify-between gap-2 transition-opacity" style={{ opacity: 1 - i * 0.22 }}>

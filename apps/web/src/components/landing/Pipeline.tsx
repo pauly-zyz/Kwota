@@ -6,9 +6,9 @@ const nodes = [
   { x: 730, label: "AI", sub: "any model", icon: "M-6 -6 H6 V6 H-6 Z M-3 -3 H3 V3 H-3 Z" },
 ];
 
-export function Pipeline() {
+export function Pipeline({ variant = "glass" }: { variant?: "glass" | "square" }) {
   return (
-    <div className="glass overflow-hidden p-4 sm:p-8">
+    <div className={variant === "square" ? "overflow-hidden border border-white/10 bg-black/60 p-4 sm:p-8" : "glass overflow-hidden p-4 sm:p-8"}>
       <svg viewBox="0 0 800 220" className="w-full" role="img" aria-label="Fee to Pool to Kwota to AI">
         <defs>
           <linearGradient id="pl-line" x1="0" x2="1">
@@ -36,9 +36,9 @@ export function Pipeline() {
         {nodes.map((n) => (
           <g key={n.label} transform={`translate(${n.x} 110)`}>
             <circle r="46" fill="url(#pl-node)" />
-            <circle r="28" fill="#0b0d0c" stroke="#C8F23A" strokeOpacity="0.8" strokeWidth="1.5" />
+            {variant === "square" ? <rect x="-26" y="-26" width="52" height="52" fill="#0b0d0c" stroke="#C8F23A" strokeOpacity="0.8" strokeWidth="1.5" /> : <circle r="28" fill="#0b0d0c" stroke="#C8F23A" strokeOpacity="0.8" strokeWidth="1.5" />}
             <path d={n.icon} fill="none" stroke="#C8F23A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            <text y="54" textAnchor="middle" fontSize="15" fill="#E7EBE8" fontWeight="600">{n.label}</text>
+            <text y="54" textAnchor="middle" fontSize="15" fill="#E7EBE8" fontWeight="600" fontFamily={variant === "square" ? "var(--font-display)" : undefined} style={variant === "square" ? { textTransform: "uppercase", letterSpacing: "0.08em" } : undefined}>{n.label}</text>
             <text y="72" textAnchor="middle" fontSize="11" fill="#9BA39E" fontFamily="var(--font-geist-mono)">{n.sub}</text>
           </g>
         ))}

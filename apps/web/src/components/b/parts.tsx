@@ -66,8 +66,8 @@ export function BigReadout() {
   const txt = v.toFixed(4).padStart(12, "0");
   return (
     <div className="relative select-none font-display leading-none tracking-[-0.02em]">
-      <div className="ghost-digits text-[clamp(56px,13vw,200px)] font-semibold">8888888.8888</div>
-      <div className="absolute inset-0 text-[clamp(56px,13vw,200px)] font-semibold text-volt [text-shadow:0_0_40px_rgba(200,242,58,0.35)]">
+      <div className="ghost-digits text-[clamp(48px,11.5vw,180px)] font-semibold">8888888.8888</div>
+      <div className="absolute inset-0 text-[clamp(48px,11.5vw,180px)] font-semibold text-volt [text-shadow:0_0_40px_rgba(200,242,58,0.35)]">
         {txt.split("").map((c, i) => (
           <span key={i} className={i < txt.search(/[1-9]/) ? "text-volt/15" : ""}>
             {c}

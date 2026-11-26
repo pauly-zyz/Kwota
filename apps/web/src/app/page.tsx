@@ -6,6 +6,8 @@ import { LiveBoard } from "@/components/b/LiveBoard";
 import { Terminal } from "@/components/landing/Terminal";
 import { AgentDeck } from "@/components/landing/AgentDeck";
 import { Reveal } from "@/components/landing/fx";
+import { HeroMeter } from "@/components/landing/HeroMeter";
+import { Pipeline } from "@/components/landing/Pipeline";
 
 const steps = [
   { t: "Hold $KWOTA", d: "Your balance is tracked second by second. The longer you hold through an epoch, the larger your weight.", v: 6 },
@@ -42,31 +44,36 @@ export default function Home() {
               </span>
             </div>
           </Reveal>
-          <Reveal delay={80}>
-            <h1 className="mt-10 font-display text-[clamp(52px,10vw,148px)] font-semibold uppercase leading-[0.88] tracking-[-0.03em] text-fog-100">
-              Your AI <Mark>kwota</Mark>,
-              <br />
-              funded by
-              <br />
-              every trade.
-            </h1>
-          </Reveal>
-          <div className="mt-12 grid gap-10 border-t hair pt-8 md:grid-cols-[1.2fr_1fr]">
-            <Reveal delay={160}>
-              <p className="max-w-xl font-mono text-sm leading-7 text-fog sm:text-base">
-                $KWOTA turns trading fees into metered AI usage. Hold the token, receive kwota every epoch, spend it on frontier models — yourself
-                or through your own ERC-8004 agents. Every number is public and verifiable.
-              </p>
-            </Reveal>
-            <Reveal delay={220}>
-              <div className="flex flex-wrap items-start gap-3 md:justify-end">
-                <Link href="/app/" className="group inline-flex items-center gap-3 bg-volt px-6 py-4 font-display text-sm font-semibold uppercase tracking-[0.12em] text-ink transition hover:bg-[#d8ff4f]">
-                  Open app <span className="transition group-hover:translate-x-1">→</span>
-                </Link>
-                <Link href="/transparency/" className="inline-flex items-center gap-3 border border-white/15 px-6 py-4 font-display text-sm font-semibold uppercase tracking-[0.12em] text-fog-100 transition hover:border-volt hover:text-volt">
-                  Live meter
-                </Link>
-              </div>
+          <div className="mt-10 grid items-center gap-12 lg:grid-cols-[1.25fr_1fr]">
+            <div>
+              <Reveal delay={80}>
+                <h1 className="font-display text-[clamp(48px,7.4vw,112px)] font-semibold uppercase leading-[0.88] tracking-[-0.03em] text-fog-100">
+                  Your AI <Mark>kwota</Mark>,
+                  <br />
+                  funded by
+                  <br />
+                  every trade.
+                </h1>
+              </Reveal>
+              <Reveal delay={160}>
+                <p className="mt-10 max-w-xl border-t hair pt-8 font-mono text-sm leading-7 text-fog sm:text-base">
+                  $KWOTA turns trading fees into metered AI usage. Hold the token, receive kwota every epoch, spend it on frontier models — yourself
+                  or through your own ERC-8004 agents. Every number is public and verifiable.
+                </p>
+              </Reveal>
+              <Reveal delay={220}>
+                <div className="mt-8 flex flex-wrap items-start gap-3">
+                  <Link href="/app/" className="group inline-flex items-center gap-3 bg-volt px-6 py-4 font-display text-sm font-semibold uppercase tracking-[0.12em] text-ink transition hover:bg-[#d8ff4f]">
+                    Open app <span className="transition group-hover:translate-x-1">→</span>
+                  </Link>
+                  <Link href="/transparency/" className="inline-flex items-center gap-3 border border-white/15 px-6 py-4 font-display text-sm font-semibold uppercase tracking-[0.12em] text-fog-100 transition hover:border-volt hover:text-volt">
+                    Live meter
+                  </Link>
+                </div>
+              </Reveal>
+            </div>
+            <Reveal delay={200}>
+              <HeroMeter variant="square" />
             </Reveal>
           </div>
         </div>
@@ -105,6 +112,11 @@ export default function Home() {
             </Reveal>
           </div>
           <div className="border-t hair">
+            <Reveal>
+              <div className="border-b hair py-8">
+                <Pipeline variant="square" />
+              </div>
+            </Reveal>
             {steps.map((s, i) => (
               <Reveal key={s.t} delay={i * 60}>
                 <div className="group grid grid-cols-[auto_1fr] gap-6 border-b hair py-10 sm:gap-10">
