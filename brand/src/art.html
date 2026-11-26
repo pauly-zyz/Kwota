@@ -1,0 +1,98 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: "Chakra"; src: url(chakra-petch-latin-600-normal.woff2); font-weight: 600; }
+@font-face { font-family: "Chakra"; src: url(chakra-petch-latin-700-normal.woff2); font-weight: 700; }
+@font-face { font-family: "GMono"; src: url(GeistMono.woff2); }
+html,body { margin:0; background:#050505; }
+#stage { position:relative; overflow:hidden; background:#050505; }
+</style></head>
+<body><div id="stage"></div>
+<script>
+const LIME = "#C8F23A", MINT = "#7FE0B8", PALE = "#F4FFD0";
+const ease = (k) => 1 - Math.pow(1 - k, 3);
+const params = new URLSearchParams(location.search);
+const MODE = params.get("mode") || "logo";
+const W = MODE === "logo" ? 1000 : 1500, H = MODE === "logo" ? 1000 : 500;
+const stage = document.getElementById("stage");
+stage.style.width = W + "px"; stage.style.height = H + "px";
+
+// gauge SVG: 240° sweep, cx, cy, r; pct 0..1
+function gauge({ cx, cy, r, pct, stroke, ticks = 40, labels = false, needle = true, hub = true, glow = true, tickColorOff = "#262b28" }) {
+  const start = 150, sweep = 240;
+  const P = (deg, rr) => { const a = deg * Math.PI / 180; return [cx + rr * Math.cos(a), cy + rr * Math.sin(a)]; };
+  const arc = (from, to, rr) => { const [x1,y1] = P(from, rr), [x2,y2] = P(to, rr); return `M ${x1} ${y1} A ${rr} ${rr} 0 ${to-from>180?1:0} 1 ${x2} ${y2}`; };
+  const len = 2 * Math.PI * r * sweep / 360;
+  let s = "";
+  for (let i = 0; i <= ticks; i++) {
+    const d = start + sweep * i / ticks, major = i % 5 === 0;
+    const [x1,y1] = P(d, r - stroke * (major ? 1.9 : 1.55)), [x2,y2] = P(d, r - stroke * 1.05);
+    const on = i / ticks <= pct + 1e-6;
+    s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${on ? LIME : tickColorOff}" stroke-width="${major ? stroke*0.22 : stroke*0.12}" stroke-linecap="round"/>`;
+  }
+  s += `<path d="${arc(start, start+sweep, r)}" fill="none" stroke="#161a18" stroke-width="${stroke}" stroke-linecap="round"/>`;
+  s += `<path d="${arc(start, start+sweep, r)}" fill="none" stroke="url(#g)" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${len}" stroke-dashoffset="${len*(1-pct)}" ${glow ? 'filter="url(#glow)"' : ""}/>`;
+  if (needle) {
+    const d = start + sweep * pct; const [nx,ny] = P(d, r * 0.74);
+    s += `<line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" stroke="${PALE}" stroke-width="${stroke*0.26}" stroke-linecap="round"/>`;
+    s += `<circle cx="${nx}" cy="${ny}" r="${stroke*0.24}" fill="${LIME}" ${glow ? 'filter="url(#glow)"' : ""}/>`;
+  }
+  if (hub) s += `<circle cx="${cx}" cy="${cy}" r="${stroke*0.62}" fill="#050505" stroke="${LIME}" stroke-width="${stroke*0.26}"/>`;
+  return s;
+}
+const defs = (blur) => `<defs>
+  <linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="${MINT}"/><stop offset=".6" stop-color="${LIME}"/><stop offset="1" stop-color="${PALE}"/></linearGradient>
+  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${blur}" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <radialGradient id="halo"><stop offset="0" stop-color="${LIME}" stop-opacity=".22"/><stop offset="1" stop-color="${LIME}" stop-opacity="0"/></radialGradient>
+  <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0H0V50" fill="none" stroke="#ffffff" stroke-opacity=".045" stroke-width="1"/></pattern>
+</defs>`;
+
+// pct timeline for animation: sweep up 0→0.78 (0–0.45), settle overshoot, gentle breathing
+function pctAt(t, still) {
+  if (still) return 0.72;
+  if (t < 0.45) return 0.78 * ease(t / 0.45);
+  const k = (t - 0.45) / 0.55;
+  return 0.72 + 0.06 * Math.cos(k * Math.PI * 2) * (1 - k * 0.0);
+}
+
+function renderLogo(t, still) {
+  const pct = pctAt(t, still);
+  // centred, safe for circular crops: content within ~70% diameter
+  return `<svg width="${W}" height="${H}" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">${defs(14)}
+    <rect width="1000" height="1000" fill="#050505"/>
+    <rect width="1000" height="1000" fill="url(#grid)"/>
+    <circle cx="500" cy="520" r="430" fill="url(#halo)"/>
+    ${gauge({ cx: 500, cy: 540, r: 300, pct, stroke: 56, ticks: 40 })}
+    <text x="500" y="790" text-anchor="middle" font-family="Chakra" font-weight="700" font-size="104" letter-spacing="10" fill="#E7EBE8">KWOTA</text>
+  </svg>`;
+}
+
+function renderBanner(t, still) {
+  const pct = pctAt(t, still);
+  const segs = 72; let bar = "";
+  for (let i = 0; i < segs; i++) {
+    const phase = still ? 1 : ((t * 2 - i / segs) % 1 + 1) % 1;
+    const op = still ? (i / segs < 0.72 ? 1 : 0.14) : (phase < 0.5 ? 0.15 + 0.85 * Math.sin(phase * Math.PI * 2) ** 2 : 0.14);
+    bar += `<rect x="${60 + i * (1380 / segs)}" y="440" width="${1380 / segs - 4}" height="16" fill="${LIME}" opacity="${op.toFixed(3)}"/>`;
+  }
+  const counter = (12841.3071 + (still ? 0 : t * 3.8)).toFixed(4);
+  return `<svg width="${W}" height="${H}" viewBox="0 0 1500 500" xmlns="http://www.w3.org/2000/svg">${defs(9)}
+    <rect width="1500" height="500" fill="#050505"/>
+    <rect width="1500" height="500" fill="url(#grid)"/>
+    <circle cx="1170" cy="230" r="330" fill="url(#halo)"/>
+    <text x="60" y="78" font-family="GMono" font-size="17" letter-spacing="5" fill="#9BA39E">[ AI INFERENCE CREDITS · ROBINHOOD CHAIN ]</text>
+    <rect x="58" y="112" width="500" height="138" fill="${LIME}"/>
+    <text x="78" y="231" font-family="Chakra" font-weight="700" font-size="148" textLength="460" lengthAdjust="spacingAndGlyphs" fill="#050505">KWOTA</text>
+    <text x="584" y="232" font-family="Chakra" font-weight="700" font-size="60" fill="#E7EBE8">$KWOTA</text>
+    <text x="60" y="318" font-family="Chakra" font-weight="600" font-size="46" letter-spacing="1" fill="#E7EBE8">YOUR AI KWOTA, FUNDED BY EVERY TRADE.</text>
+    <text x="60" y="372" font-family="GMono" font-size="19" letter-spacing="2" fill="#9BA39E">hold → earn kwota every epoch → spend it on AI · agents included</text>
+    <text x="60" y="414" font-family="GMono" font-size="16" letter-spacing="3" fill="${LIME}">KWOTA METERED  ${counter}</text>
+    ${gauge({ cx: 1220, cy: 245, r: 150, pct, stroke: 30, ticks: 40 })}
+    <text x="1220" y="352" text-anchor="middle" font-family="GMono" font-size="15" letter-spacing="4" fill="#9BA39E">KWOTA METER</text>
+    ${bar}
+  </svg>`;
+}
+
+window.render = (t, still) => { stage.innerHTML = MODE === "logo" ? renderLogo(t, still) : renderBanner(t, still); };
+document.fonts.ready.then(() => { window.render(0, true); window.ready = true; });
+</script></body></html>
