@@ -2,8 +2,10 @@
  * Seed default model list (prices in USD per 1M tokens = kwota per 1M tokens),
  * agent registry and system exclusions. Idempotent.
  *
- * Prices are placeholders to be confirmed against the provider's live price list
- * before launch (admin can edit them in the dashboard).
+ * Prices: GPT-4o mini, Llama 3.3 70B and DeepSeek V3 taken from OpenRouter model
+ * pages (Nov 2026; for multi-provider models the higher endpoint price is used so
+ * kwota never undercharges). Gemini / Mistral / Qwen are estimates — confirm
+ * against the live price list before launch (admin can edit in the dashboard).
  */
 import { tables } from "@kwota/db";
 import { parseKwota } from "@kwota/core";
@@ -20,8 +22,8 @@ const models = live
   ? [
       { id: "openai/gpt-4o-mini", providerModelId: "openai/gpt-4o-mini", displayName: "GPT-4o mini", contextLength: 128000, input: "0.15", output: "0.60" },
       { id: "google/gemini-2.0-flash", providerModelId: "google/gemini-2.0-flash-001", displayName: "Gemini 2.0 Flash", contextLength: 1000000, input: "0.10", output: "0.40" },
-      { id: "meta-llama/llama-3.3-70b", providerModelId: "meta-llama/llama-3.3-70b-instruct", displayName: "Llama 3.3 70B", contextLength: 131072, input: "0.13", output: "0.40" },
-      { id: "deepseek/deepseek-chat", providerModelId: "deepseek/deepseek-chat", displayName: "DeepSeek V3", contextLength: 64000, input: "0.38", output: "0.89" },
+      { id: "meta-llama/llama-3.3-70b", providerModelId: "meta-llama/llama-3.3-70b-instruct", displayName: "Llama 3.3 70B", contextLength: 131072, input: "0.10", output: "0.32" },
+      { id: "deepseek/deepseek-chat", providerModelId: "deepseek/deepseek-chat", displayName: "DeepSeek V3", contextLength: 64000, input: "0.32", output: "1.03" },
       { id: "mistralai/mistral-small", providerModelId: "mistralai/mistral-small-3.1-24b-instruct", displayName: "Mistral Small 3.1", contextLength: 128000, input: "0.10", output: "0.30" },
       { id: "qwen/qwen-2.5-72b", providerModelId: "qwen/qwen-2.5-72b-instruct", displayName: "Qwen 2.5 72B", contextLength: 32768, input: "0.12", output: "0.39" },
     ]

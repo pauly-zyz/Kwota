@@ -37,8 +37,8 @@ export const demoEpochs = Array.from({ length: 8 }, (_, i) => {
 export const demoModels = [
   { id: "openai/gpt-4o-mini", displayName: "GPT-4o mini", provider: "openrouter", contextLength: 128000, inputPriceMicroPerMTok: "150000", outputPriceMicroPerMTok: "600000", markupBps: 0 },
   { id: "google/gemini-2.0-flash", displayName: "Gemini 2.0 Flash", provider: "openrouter", contextLength: 1000000, inputPriceMicroPerMTok: "100000", outputPriceMicroPerMTok: "400000", markupBps: 0 },
-  { id: "meta-llama/llama-3.3-70b", displayName: "Llama 3.3 70B", provider: "openrouter", contextLength: 131072, inputPriceMicroPerMTok: "130000", outputPriceMicroPerMTok: "400000", markupBps: 0 },
-  { id: "deepseek/deepseek-chat", displayName: "DeepSeek V3", provider: "openrouter", contextLength: 64000, inputPriceMicroPerMTok: "380000", outputPriceMicroPerMTok: "890000", markupBps: 0 },
+  { id: "meta-llama/llama-3.3-70b", displayName: "Llama 3.3 70B", provider: "openrouter", contextLength: 131072, inputPriceMicroPerMTok: "100000", outputPriceMicroPerMTok: "320000", markupBps: 0 },
+  { id: "deepseek/deepseek-chat", displayName: "DeepSeek V3", provider: "openrouter", contextLength: 64000, inputPriceMicroPerMTok: "320000", outputPriceMicroPerMTok: "1030000", markupBps: 0 },
   { id: "mistralai/mistral-small", displayName: "Mistral Small 3.1", provider: "openrouter", contextLength: 128000, inputPriceMicroPerMTok: "100000", outputPriceMicroPerMTok: "300000", markupBps: 0 },
 ];
 

@@ -1,14 +1,18 @@
 import { defineChain } from "viem";
 
+const OFFICIAL: Record<number, { rpc: string; explorer: string }> = {
+  4663: { rpc: "https://rpc.mainnet.chain.robinhood.com", explorer: "https://robinhoodchain.blockscout.com" },
+  46630: { rpc: "https://rpc.testnet.chain.robinhood.com", explorer: "https://explorer.testnet.chain.robinhood.com" },
+};
+const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID || 46630);
+
 const env = (v: string | undefined) => (v && v.trim() ? v.trim() : undefined);
 
 export const config = {
   apiUrl: env(process.env.NEXT_PUBLIC_API_URL)?.replace(/\/$/, ""),
-  chainId: Number(process.env.NEXT_PUBLIC_CHAIN_ID || 46630),
-  rpcUrl: env(process.env.NEXT_PUBLIC_RPC_URL),
-  explorerUrl:
-    env(process.env.NEXT_PUBLIC_EXPLORER_URL) ??
-    (Number(process.env.NEXT_PUBLIC_CHAIN_ID || 46630) === 4663 ? "https://robinhoodchain.blockscout.com" : undefined),
+  chainId: CHAIN_ID,
+  rpcUrl: env(process.env.NEXT_PUBLIC_RPC_URL) ?? OFFICIAL[CHAIN_ID]?.rpc,
+  explorerUrl: env(process.env.NEXT_PUBLIC_EXPLORER_URL) ?? OFFICIAL[CHAIN_ID]?.explorer,
   token: env(process.env.NEXT_PUBLIC_KWOTA_TOKEN_ADDRESS) as `0x${string}` | undefined,
   vault: env(process.env.NEXT_PUBLIC_VAULT_ADDRESS) as `0x${string}` | undefined,
   ant: "0xbbb6c29bcc3a1028a2b54310df73f4f7a3bcb373" as `0x${string}`,

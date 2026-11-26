@@ -43,8 +43,8 @@ Repo sudah punya `vercel.json` di root (build `@kwota/web`, output statis `apps/
 |---|---|
 | `NEXT_PUBLIC_API_URL` | `https://api.kwota.xyz` |
 | `NEXT_PUBLIC_CHAIN_ID` | `46630` (testnet) / `4663` (mainnet) |
-| `NEXT_PUBLIC_RPC_URL` | RPC resmi Robinhood Chain |
-| `NEXT_PUBLIC_EXPLORER_URL` | explorer Blockscout |
+| `NEXT_PUBLIC_RPC_URL` | opsional — default RPC publik resmi (rate-limited); isi endpoint provider untuk production |
+| `NEXT_PUBLIC_EXPLORER_URL` | opsional — default explorer resmi sesuai chain |
 | `NEXT_PUBLIC_KWOTA_TOKEN_ADDRESS` | CA $KWOTA |
 | `NEXT_PUBLIC_VAULT_ADDRESS` | wallet/Safe vault ANT |
 | `NEXT_PUBLIC_PONS_URL`, `NEXT_PUBLIC_DEXSCREENER_URL`, `NEXT_PUBLIC_X_URL` | tautan |

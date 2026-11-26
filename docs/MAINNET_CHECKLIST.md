@@ -10,7 +10,9 @@
 - [ ] Apakah model vendor Anthropic dicantumkan (nama saja, tanpa logo)
 
 ## Alamat & config (production)
-- [ ] `CHAIN_ID=4663`, `RPC_URL` & explorer dari dokumentasi resmi
+- [x] Endpoint resmi sudah jadi default (`rpc.mainnet.chain.robinhood.com`, `robinhoodchain.blockscout.com`)
+- [ ] `CHAIN_ID=4663` + `RPC_URL` provider berbayar (RPC publik rate-limited, tidak untuk production)
+- [ ] Konfirmasi USDG `0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168` di explorer untuk chain yang dipakai
 - [ ] CA $KWOTA setelah launch di Pons, blok deploy → `INDEXER_START_BLOCK`
 - [ ] `TREASURY_ADDRESS` = wallet dev penerima fee; `POOL/VAULT/OPS` (disarankan Safe multisig)
 - [ ] `LP_PAIR_ADDRESSES` (pair KWOTA/ANT di Pons) + kontrak Pons/router di `PROTOCOL_ADDRESSES`

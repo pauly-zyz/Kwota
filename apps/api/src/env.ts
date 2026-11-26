@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { OFFICIAL_NETWORKS } from "@kwota/config";
 
 const addr = z.string().regex(/^0x[0-9a-fA-F]{40}$/).transform((s) => s.toLowerCase() as `0x${string}`);
 const optAddr = z.preprocess((v) => (v === "" ? undefined : v), addr.optional());
@@ -59,6 +60,13 @@ export function loadEnv(src: Record<string, string | undefined> = process.env): 
     throw new Error("Invalid environment: " + JSON.stringify(parsed.error.flatten().fieldErrors));
   }
   const env = parsed.data;
+  // official public endpoints (docs.robinhood.com) when not overridden; tests pass RPC_URL="" explicitly via NODE_ENV=test
+  if (env.NODE_ENV !== "test") {
+    const off = OFFICIAL_NETWORKS[env.CHAIN_ID];
+    if (off && !env.RPC_URL) env.RPC_URL = off.rpcUrl;
+    if (off && !env.EXPLORER_URL) env.EXPLORER_URL = off.explorerUrl;
+    if (off && !env.BLOCKSCOUT_API_URL) env.BLOCKSCOUT_API_URL = off.explorerUrl;
+  }
   if (env.NODE_ENV === "production" && env.SESSION_SECRET.startsWith("dev-only")) {
     throw new Error("SESSION_SECRET must be set in production");
   }
