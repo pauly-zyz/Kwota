@@ -36,7 +36,7 @@ export function Meter({ value, max = 1, size = 220, label, sub, ticks = 24 }: { 
         <circle cx={110 + Math.cos(Math.PI - pct * Math.PI) * r} cy={112 - Math.sin(Math.PI - pct * Math.PI) * r} r="6" fill="#0B0D0C" stroke="#C8F23A" strokeWidth="3" />
       </svg>
       {(label || sub) && (
-        <div className="-mt-8 text-center">
+        <div className="-mt-5 text-center">
           {label && <div className="font-mono text-2xl tabular-nums text-fog-100 sm:text-[28px]">{label}</div>}
           {sub && <div className="mt-0.5 text-xs uppercase tracking-[0.16em] text-fog">{sub}</div>}
         </div>

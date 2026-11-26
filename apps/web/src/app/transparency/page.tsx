@@ -45,7 +45,7 @@ export default function Transparency() {
     <div className="mx-auto max-w-6xl px-4 py-12">
       <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-fog-100 sm:text-4xl">Transparency</h1>
+          <h1 className="font-display text-5xl font-semibold uppercase leading-[0.9] tracking-[-0.02em] text-fog-100 sm:text-6xl">Transparency</h1>
           <p className="mt-2 max-w-2xl text-fog">Every fee, swap, epoch and model price. Updated every 30 seconds.</p>
         </div>
         <div className="font-mono text-xs text-fog">updated {o ? dateTime(o.updatedAt) : "—"}</div>

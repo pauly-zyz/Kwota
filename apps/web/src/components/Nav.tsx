@@ -65,12 +65,12 @@ export function AppTabs() {
     { href: "/app/playground/", label: "Playground" },
   ];
   return (
-    <div className="glass mb-6 flex gap-1 overflow-x-auto !rounded-full p-1 text-sm">
+    <div className="mb-8 flex gap-px overflow-x-auto border border-white/10 bg-white/10 font-mono text-[11px] uppercase tracking-[0.18em]">
       {tabs.map((t) => (
         <Link
           key={t.href}
           href={t.href}
-          className={cn("whitespace-nowrap rounded-full px-4 py-1.5", path === t.href ? "bg-volt text-ink" : "text-fog hover:text-fog-100")}
+          className={cn("flex-1 whitespace-nowrap px-4 py-3 text-center", path === t.href ? "bg-volt text-ink" : "bg-[#050505] text-fog hover:text-fog-100")}
         >
           {t.label}
         </Link>

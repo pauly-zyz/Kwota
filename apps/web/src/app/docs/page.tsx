@@ -4,11 +4,11 @@ import { useApiBase } from "@/lib/apiMode";
 
 
 function Code({ children }: { children: string }) {
-  return <pre className="mt-3 overflow-x-auto rounded-xl border border-line bg-ink-900 p-4 text-xs leading-relaxed text-fog-100"><code>{children}</code></pre>;
+  return <pre className="mt-3 overflow-x-auto border border-white/10 bg-black p-4 text-xs leading-relaxed text-fog-100"><code>{children}</code></pre>;
 }
 
 function H({ id, children }: { id: string; children: React.ReactNode }) {
-  return <h2 id={id} className="mt-12 scroll-mt-24 text-2xl font-semibold tracking-tight text-fog-100">{children}</h2>;
+  return <h2 id={id} className="mt-14 scroll-mt-24 font-display text-3xl font-semibold uppercase tracking-[-0.01em] text-fog-100">{children}</h2>;
 }
 
 export default function Docs() {
@@ -24,7 +24,7 @@ export default function Docs() {
         </nav>
       </aside>
       <article className="min-w-0 max-w-3xl text-fog">
-        <h1 className="text-4xl font-semibold tracking-tight text-fog-100">API docs</h1>
+        <h1 className="font-display text-5xl font-semibold uppercase leading-[0.9] tracking-[-0.02em] text-fog-100 sm:text-6xl">API docs</h1>
         <p className="mt-3">KWOTA exposes an OpenAI-compatible API. Point any OpenAI SDK at the KWOTA base URL and use your KWOTA API key.</p>
 
         <H id="quick">Quick start</H>

@@ -37,7 +37,7 @@ export function Terminal() {
     return () => clearInterval(iv);
   }, [full]);
   return (
-    <div className="glass overflow-hidden">
+    <div className="overflow-hidden border border-white/10 bg-black">
       <div className="flex items-center gap-2 border-b border-white/5 px-4 py-3">
         <span className="h-3 w-3 rounded-full bg-[#ff5f57]/80" />
         <span className="h-3 w-3 rounded-full bg-[#febc2e]/80" />

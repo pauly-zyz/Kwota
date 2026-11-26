@@ -39,7 +39,7 @@ export default function AdminPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <div className="mb-6">
-        <h1 className="text-3xl font-semibold tracking-tight text-fog-100">Admin</h1>
+        <h1 className="font-display text-5xl font-semibold uppercase leading-[0.9] tracking-[-0.02em] text-fog-100 sm:text-6xl">Admin</h1>
         <p className="mt-1 text-sm text-fog">Every change is signed by your admin wallet (EIP-712) and written to the audit log. The server holds no keys.</p>
       </div>
       {demoMode ? (
@@ -155,7 +155,7 @@ function ParamsCard({ params, act }: { params: Any; act: Act }) {
         <Field label="Ops %"><Input value={f.ops ?? ""} onChange={set("ops")} /></Field>
         <Field label="Min holding (KWOTA)"><Input value={f.minHolding ?? ""} onChange={set("minHolding")} /></Field>
         <Field label="Min holding mode">
-          <select className="w-full rounded-xl border border-line bg-ink-900 px-3 py-2 text-sm text-fog-100" value={f.mode} onChange={set("mode")}>
+          <select className="w-full border border-white/10 bg-black px-3 py-2 text-sm text-fog-100" value={f.mode} onChange={set("mode")}>
             <option value="twab">time-weighted avg</option>
             <option value="min_balance">never below</option>
           </select>
@@ -219,7 +219,7 @@ function SwapCard({ swaps, act }: { swaps: Any[]; act: Act }) {
       <p className="mb-3 text-xs text-fog">Execute the swap from your own wallet first, then paste the tx hash. The server verifies the receipt (sender, destination wallet, token) before recording.</p>
       <div className="grid gap-2 sm:grid-cols-[1fr_120px]">
         <Input placeholder="0x… tx hash" value={f.txHash} onChange={(e) => setF({ ...f, txHash: e.target.value.trim() })} />
-        <select className="rounded-xl border border-line bg-ink-900 px-3 py-2 text-sm text-fog-100" value={f.bucket} onChange={(e) => setF({ ...f, bucket: e.target.value })}>
+        <select className="border border-white/10 bg-black px-3 py-2 text-sm text-fog-100" value={f.bucket} onChange={(e) => setF({ ...f, bucket: e.target.value })}>
           <option value="pool">pool</option>
           <option value="vault">vault</option>
           <option value="ops">ops</option>
@@ -301,7 +301,7 @@ function ExclusionsCard({ rows, act }: { rows: Any[]; act: Act }) {
     <Card title="Excluded addresses & blacklist">
       <div className="grid gap-2 sm:grid-cols-[1fr_130px]">
         <Input placeholder="0x… address" value={f.address} onChange={(e) => setF({ ...f, address: e.target.value.trim() })} />
-        <select className="rounded-xl border border-line bg-ink-900 px-3 py-2 text-sm text-fog-100" value={f.reason} onChange={(e) => setF({ ...f, reason: e.target.value })}>
+        <select className="border border-white/10 bg-black px-3 py-2 text-sm text-fog-100" value={f.reason} onChange={(e) => setF({ ...f, reason: e.target.value })}>
           {["blacklist", "lp", "protocol", "treasury", "vault", "ops", "burn"].map((r) => <option key={r}>{r}</option>)}
         </select>
       </div>

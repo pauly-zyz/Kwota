@@ -46,7 +46,7 @@ export default function Agents() {
           }}
         >
           <select
-            className="rounded-xl border border-line bg-ink-900 px-3 py-2 text-sm text-fog-100"
+            className="border border-white/10 bg-black px-3 py-2 text-sm text-fog-100"
             value={form.registryId}
             onChange={(e) => setForm({ ...form, registryId: e.target.value })}
           >

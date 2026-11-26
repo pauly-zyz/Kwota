@@ -110,7 +110,7 @@ export default function Playground() {
       action={
         <div className="flex items-center gap-3">
           <span className="hidden font-mono text-xs text-fog sm:inline">session cost {kwota(BigInt(total), 6)} kwota</span>
-          <select className="rounded-lg border border-line bg-ink-900 px-2 py-1 text-sm text-fog-100" value={model} onChange={(e) => setModel(e.target.value)}>
+          <select className="border border-white/10 bg-black px-2 py-1 text-sm text-fog-100" value={model} onChange={(e) => setModel(e.target.value)}>
             {(models.data?.data ?? []).map((m) => (
               <option key={m.id} value={m.id}>{m.name}</option>
             ))}
@@ -119,12 +119,12 @@ export default function Playground() {
       }
     >
       {sel && <div className="mb-3 font-mono text-xs text-fog">{sel.pricing.kwota_per_mtok_input.toFixed(2)} in / {sel.pricing.kwota_per_mtok_output.toFixed(2)} out kwota per 1M tokens</div>}
-      <div className="h-[52vh] min-h-[320px] overflow-y-auto rounded-xl border border-line bg-ink-900 p-4">
+      <div className="h-[52vh] min-h-[320px] overflow-y-auto border border-white/10 bg-black p-4">
         {!msgs.length && <div className="flex h-full items-center justify-center text-sm text-fog">Ask anything — every token is metered from your kwota.</div>}
         <div className="space-y-4">
           {msgs.map((m, i) => (
             <div key={i} className={m.role === "user" ? "flex justify-end" : ""}>
-              <div className={m.role === "user" ? "max-w-[80%] rounded-2xl bg-ink-600 px-4 py-2 text-fog-100" : "max-w-[90%] whitespace-pre-wrap text-fog-100"}>
+              <div className={m.role === "user" ? "max-w-[80%] border border-white/10 bg-white/5 px-4 py-2 text-fog-100" : "max-w-[90%] whitespace-pre-wrap text-fog-100"}>
                 {m.content || (busy && i === msgs.length - 1 ? <span className="animate-pulse text-fog">▍</span> : null)}
                 {m.cost && <div className="mt-1 font-mono text-[11px] text-fog">−{kwota(m.cost, 6)} kwota</div>}
               </div>
@@ -141,7 +141,7 @@ export default function Playground() {
         }}
       >
         <textarea
-          className="min-h-[44px] flex-1 resize-none rounded-xl border border-line bg-ink-900 px-3 py-2.5 text-sm text-fog-100 outline-none focus:border-volt/60"
+          className="min-h-[44px] flex-1 resize-none border border-white/10 bg-black px-3 py-2.5 text-sm text-fog-100 outline-none focus:border-volt/60"
           rows={1}
           placeholder="Message…"
           value={input}

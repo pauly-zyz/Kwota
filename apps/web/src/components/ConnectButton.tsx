@@ -30,7 +30,7 @@ export function ConnectButton({ compact = false }: { compact?: boolean }) {
         {isPending ? "Connecting…" : compact ? "Connect" : "Connect wallet"}
       </Button>
       {open && list.length > 1 && (
-        <div className="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-line bg-ink-800 p-1 shadow-xl">
+        <div className="absolute right-0 z-50 mt-2 w-56 border border-white/10 bg-black p-1 shadow-xl">
           {list.map((c) => (
             <button
               key={c.uid}
@@ -38,7 +38,7 @@ export function ConnectButton({ compact = false }: { compact?: boolean }) {
                 setOpen(false);
                 connect({ connector: c });
               }}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-fog-100 hover:bg-ink-700"
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-fog-100 hover:bg-ink-700"
             >
               {c.icon && <img src={c.icon} alt="" className="h-5 w-5" />}
               {c.name}
