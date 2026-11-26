@@ -2,18 +2,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage, useSwitchChain } from "wagmi";
 import { createSiweMessage } from "viem/siwe";
-import { api, getToken, setToken } from "./api";
-import { config } from "./config";
+import { api, demoToken, getToken, setToken, tokenAddress } from "./api";
+import { config, demoMode } from "./config";
 
-function decode(token: string | null): { address: string; exp: number } | null {
-  if (!token?.startsWith("kws_")) return null;
-  try {
-    const p = JSON.parse(atob(token.slice(4).split(".")[0]!.replace(/-/g, "+").replace(/_/g, "/")));
-    return p.exp * 1000 > Date.now() ? p : null;
-  } catch {
-    return null;
-  }
-}
+/** Address used for "try without a wallet" in demo mode. */
+export const DEMO_GUEST = "0xdead00000000000000000000000000000000beef";
 
 /** SIWE session bound to the connected wallet. */
 export function useSession() {
@@ -35,8 +28,9 @@ export function useSession() {
     };
   }, []);
 
-  const payload = decode(token);
-  const signedIn = !!payload && !!address && payload.address === address.toLowerCase();
+  const tokenAddr = tokenAddress(token);
+  const guest = demoMode && tokenAddr === DEMO_GUEST;
+  const signedIn = !!tokenAddr && (guest || (!!address && tokenAddr === address.toLowerCase()));
 
   const signIn = useCallback(async () => {
     if (!address) return;
@@ -44,6 +38,12 @@ export function useSession() {
     setError(null);
     try {
       if (chainId !== config.chainId) await switchChainAsync({ chainId: config.chainId }).catch(() => undefined);
+      if (demoMode) {
+        // same wallet UX (free signature), but verified nowhere: demo state stays in this browser
+        await signMessageAsync({ message: `Sign in to the KWOTA demo.\n\nAddress: ${address}\nNo transaction, no gas, no real kwota.\nIssued: ${new Date().toISOString()}` });
+        setToken(demoToken(address));
+        return;
+      }
       const { nonce } = await api<{ nonce: string }>("/auth/nonce", { auth: false });
       const message = createSiweMessage({
         address, chainId: config.chainId, domain: window.location.host, nonce, uri: window.location.origin, version: "1",
@@ -61,5 +61,6 @@ export function useSession() {
   }, [address, chainId, signMessageAsync, switchChainAsync]);
 
   const signOut = useCallback(() => setToken(null), []);
-  return { address, signedIn, signIn, signOut, busy, error };
+  const tryAsGuest = useCallback(() => setToken(demoToken(DEMO_GUEST)), []);
+  return { address: guest ? (DEMO_GUEST as `0x${string}`) : address, signedIn, signIn, signOut, tryAsGuest, guest, busy, error };
 }

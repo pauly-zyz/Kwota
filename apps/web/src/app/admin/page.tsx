@@ -7,7 +7,7 @@ import { ADMIN_ACTION_TYPES, adminDomain } from "@kwota/core/agentAuth";
 import { Badge, Button, Card, Empty, ErrorNote, Input } from "@/components/ui";
 import { SignInGate } from "@/components/SignInGate";
 import { api } from "@/lib/api";
-import { config, explorerTx } from "@/lib/config";
+import { config, demoMode, explorerTx } from "@/lib/config";
 import { dateTime, kwota, short, token } from "@/lib/format";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,9 +40,19 @@ export default function AdminPage() {
         <h1 className="text-3xl font-semibold tracking-tight text-fog-100">Admin</h1>
         <p className="mt-1 text-sm text-fog">Every change is signed by your admin wallet (EIP-712) and written to the audit log. The server holds no keys.</p>
       </div>
-      <SignInGate>
-        <AdminInner />
-      </SignInGate>
+      {demoMode ? (
+        <Card className="mx-auto max-w-xl text-center">
+          <h2 className="text-xl font-medium text-fog-100">Admin goes live with the API</h2>
+          <p className="mt-2 text-sm text-fog">
+            The dashboard edits real parameters, verifies swaps on-chain and publishes epochs, so it only runs against the KWOTA API with your
+            admin wallet. Set <code>NEXT_PUBLIC_API_URL</code> and <code>ADMIN_ADDRESSES</code> to enable it.
+          </p>
+        </Card>
+      ) : (
+        <SignInGate>
+          <AdminInner />
+        </SignInGate>
+      )}
     </div>
   );
 }

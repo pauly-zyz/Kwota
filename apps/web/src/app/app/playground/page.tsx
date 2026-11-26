@@ -2,8 +2,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Button, Card, ErrorNote } from "@/components/ui";
-import { api, getToken } from "@/lib/api";
-import { config } from "@/lib/config";
+import { api, getToken, tokenAddress } from "@/lib/api";
+import { config, demoMode } from "@/lib/config";
+import { mockChat } from "@/lib/mockApi";
 import { kwota } from "@/lib/format";
 
 interface Msg { role: "user" | "assistant"; content: string; cost?: string }
@@ -37,6 +38,17 @@ export default function Playground() {
     const ctrl = new AbortController();
     abortRef.current = ctrl;
     try {
+      if (demoMode) {
+        let text = "";
+        let cost: string | undefined;
+        for await (const ev of mockChat(tokenAddress(getToken())!, model, history.map(({ role, content }) => ({ role, content })))) {
+          if (ctrl.signal.aborted) break;
+          if (ev.text) text += ev.text;
+          if (ev.costMicro) cost = ev.costMicro;
+          setMsgs([...history, { role: "assistant", content: text, cost }]);
+        }
+        return;
+      }
       const res = await fetch(`${config.apiUrl}/v1/chat/completions`, {
         method: "POST",
         headers: { "content-type": "application/json", authorization: `Bearer ${getToken()}` },

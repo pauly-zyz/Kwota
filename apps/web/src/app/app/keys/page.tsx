@@ -45,7 +45,7 @@ export default function Keys() {
         <div className="mt-3"><ErrorNote error={create.error} /></div>
         {created && (
           <div className="mt-4 rounded-xl border border-volt/40 bg-volt/10 p-4">
-            <div className="text-sm text-volt">Copy this key now — it will not be shown again.</div>
+            <div className="text-sm text-volt">Copy this key now — it will not be shown again.{created.startsWith("kw_demo_") && " Demo key — create a new one once the live API is connected."}</div>
             <div className="mt-2 flex items-center gap-2">
               <code className="min-w-0 flex-1 break-all rounded-lg bg-ink-900 px-3 py-2 font-mono text-xs text-fog-100">{created}</code>
               <Copy text={created} />
