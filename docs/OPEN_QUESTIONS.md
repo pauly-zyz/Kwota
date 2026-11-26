@@ -1,5 +1,7 @@
 # KWOTA — Pertanyaan Terbuka
 
+> **Status:** semua usulan default di bawah sudah **diterapkan di kode** dan dapat diubah lewat Admin → Parameters (tanpa deploy ulang), kecuali alamat yang diisi di env.
+
 Format: **[ID] Pertanyaan** — *usulan default saya* (dipakai bila Anda setuju / belum ada jawaban).
 🔴 = memblokir milestone berikutnya, 🟡 = dibutuhkan sebelum milestone terkait, ⚪ = bisa diputuskan nanti.
 

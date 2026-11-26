@@ -1,0 +1,9 @@
+{
+  "name": "@kwota/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "forge:build": "forge build",
+    "test:sol": "forge test"
+  }
+}

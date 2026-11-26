@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+html,
+body {
+  background: #0b0d0c;
+  color: #e7ebe8;
+}
+body {
+  -webkit-font-smoothing: antialiased;
+}
+.grid-bg {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.glow {
+  background: radial-gradient(600px 300px at 70% 0%, rgba(200, 242, 58, 0.12), transparent 70%);
+}
+::selection {
+  background: rgba(200, 242, 58, 0.35);
+}
+pre code {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}

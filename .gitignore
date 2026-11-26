@@ -13,3 +13,4 @@ packages/contracts/out
 packages/contracts/cache
 packages/contracts/broadcast
 snapshots/
+*.tsbuildinfo

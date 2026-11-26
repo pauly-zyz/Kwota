@@ -1,6 +1,6 @@
 # KWOTA — Rencana Arsitektur (Milestone 1, draft untuk disetujui)
 
-> Status: **DRAFT — menunggu persetujuan.** Belum ada kode aplikasi yang ditulis.
+> Status: **Diimplementasikan (milestone 1–6).** Default dari `OPEN_QUESTIONS.md` dipakai untuk semua yang belum dijawab; semuanya bisa diubah lewat parameter admin.
 > Pertanyaan terbuka ada di [`OPEN_QUESTIONS.md`](./OPEN_QUESTIONS.md).
 
 ---
@@ -229,7 +229,7 @@ Konvensi: `*_micro` = `bigint` µkwota; `*_raw` = `numeric(78,0)` jumlah token d
 |---|---|---|
 | `users` | `id`, `address` unik | dibuat saat SIWE pertama atau saat dapat alokasi epoch |
 | `kwota_accounts` | `id`, `user_id`, `type enum(holder,agent)`, `agent_id` (nullable, unik), `balance_micro`, `reserved_micro`, `version` | cache saldo; CHECK `balance_micro ≥ reserved_micro ≥ 0` |
-| `ledger_entries` | `id`, `account_id`, `delta_micro` (±), `kind enum(epoch_credit, usage_debit, reserve, release, allocation_out, allocation_in, reclaim, admin_adjust, expiry, onchain_claim, onchain_deposit)`, `ref_type`, `ref_id`, `balance_after_micro`, `actor`, `created_at` | **append-only** (trigger menolak UPDATE/DELETE); Σ delta = balance |
+| `ledger_entries` | `id`, `account_id`, `delta_micro` (±), `kind enum(epoch_credit, usage_debit, allocation_out, allocation_in, reclaim_out, reclaim_in, admin_adjust, expiry, onchain_claim, onchain_deposit)` — reservasi tidak menulis ledger (dicatat di `kwota_accounts.reserved_micro` + `usage_requests`), hanya debit final yang masuk ledger, `ref_type`, `ref_id`, `balance_after_micro`, `actor`, `created_at` | **append-only** (trigger menolak UPDATE/DELETE); Σ delta = balance |
 | `api_keys` | `id`, `user_id`, `agent_id` (nullable), `name`, `prefix` unik, `secret_hash`, `rpm_limit`, `max_cost_per_request_micro`, `last_used_at`, `revoked_at` | |
 
 ### Gateway & model
@@ -267,11 +267,11 @@ Nonce EIP-712 & sesi SIWE disimpan di Redis (TTL); nonce juga tercatat di `usage
 
 ## 7. Milestone (sesuai brief)
 
-1. ✅ (dokumen ini) Rencana arsitektur + skema + pertanyaan terbuka.
-2. Scaffold monorepo + landing page + halaman transparansi (data dummy dari API mock).
-3. Indexer $KWOTA & treasury (testnet 46630) + mesin kwota + test + skrip `verify-epoch`.
-4. Gateway + SIWE + API key + metering + playground.
-5. Lapisan agen (adapter ERC-8004, alokasi, batas harian, EIP-712).
-6. Dashboard admin + penyempurnaan + checklist pre-mainnet.
+1. ✅ Rencana arsitektur + skema + pertanyaan terbuka.
+2. ✅ Scaffold monorepo + landing page + halaman transparansi (data dummy dari API mock).
+3. ✅ Indexer $KWOTA & treasury (testnet 46630) + mesin kwota + test + skrip `verify-epoch`.
+4. ✅ Gateway + SIWE + API key + metering + playground.
+5. ✅ Lapisan agen (adapter ERC-8004, alokasi, batas harian, EIP-712).
+6. ✅ Dashboard admin + penyempurnaan + checklist pre-mainnet.
 
 Catatan: karena $KWOTA belum diluncurkan, untuk milestone 3 saya akan men-deploy **token ERC-20 tiruan di testnet** (via Foundry, hanya untuk pengujian) agar indexer & mesin kwota bisa diuji end-to-end.
