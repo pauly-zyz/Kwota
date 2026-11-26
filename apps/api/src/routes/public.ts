@@ -15,7 +15,7 @@ export async function publicRoutes(app: FastifyInstance, ctx: Ctx) {
   const engine = new EpochEngine(ctx);
   const env = ctx.env;
 
-  app.get("/health", async () => ({ ok: true, chainId: env.CHAIN_ID }));
+  app.get("/health", async () => ({ ok: true, ready: true, chainId: env.CHAIN_ID, provider: env.MODEL_PROVIDER === "mock" ? "mock" : "live" }));
 
   app.get("/public/config", async () => ({
     chainId: env.CHAIN_ID,

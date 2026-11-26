@@ -9,7 +9,8 @@ const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID || 46630);
 const env = (v: string | undefined) => (v && v.trim() ? v.trim() : undefined);
 
 export const config = {
-  apiUrl: env(process.env.NEXT_PUBLIC_API_URL)?.replace(/\/$/, ""),
+  /** default: the API served by Vercel Functions on the same domain */
+  apiUrl: env(process.env.NEXT_PUBLIC_API_URL)?.replace(/\/$/, "") ?? "/api",
   chainId: CHAIN_ID,
   rpcUrl: env(process.env.NEXT_PUBLIC_RPC_URL) ?? OFFICIAL[CHAIN_ID]?.rpc,
   explorerUrl: env(process.env.NEXT_PUBLIC_EXPLORER_URL) ?? OFFICIAL[CHAIN_ID]?.explorer,
@@ -23,7 +24,15 @@ export const config = {
   },
 };
 
-export const demoMode = !config.apiUrl;
+/**
+ * Demo mode = the KWOTA API is not reachable/ready yet. Decided at runtime from
+ * GET {apiUrl}/health (see ApiModeProvider). Live binding: importers always read
+ * the current value; React components should use useDemo() to re-render.
+ */
+export let demoMode = true;
+export function setDemoMode(v: boolean) {
+  demoMode = v;
+}
 
 export const chain = defineChain({
   id: config.chainId,

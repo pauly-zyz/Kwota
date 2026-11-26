@@ -28,6 +28,8 @@ jobs:
         env:
           TEST_DATABASE_URL: postgres://kwota:kwota@localhost:5432/kwota_test
       - run: pnpm --filter @kwota/web build
+      - name: Vercel API bundle is up to date
+        run: pnpm --filter @kwota/api bundle:vercel && git diff --exit-code api/index.js
   contracts:
     runs-on: ubuntu-latest
     steps:

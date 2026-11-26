@@ -74,3 +74,45 @@ export class RedisKv implements Kv {
 export function createKv(url?: string): Kv {
   return url ? new RedisKv(url) : new MemoryKv();
 }
+
+/** Postgres-backed KV for serverless deployments (shared across function instances). */
+export class PgKv implements Kv {
+  private lastSweep = 0;
+  constructor(private sql: import("postgres").Sql) {}
+  private async sweep() {
+    if (Date.now() - this.lastSweep < 60_000) return;
+    this.lastSweep = Date.now();
+    await this.sql`delete from kv_store where expires_at < now()`.catch(() => {});
+  }
+  async incr(key: string, ttlSec: number) {
+    void this.sweep();
+    const [r] = await this.sql<{ value: string }[]>`
+      insert into kv_store (key, value, expires_at) values (${key}, '1', now() + make_interval(secs => ${ttlSec}))
+      on conflict (key) do update set
+        value = case when kv_store.expires_at < now() then '1' else (kv_store.value::bigint + 1)::text end,
+        expires_at = case when kv_store.expires_at < now() then excluded.expires_at else kv_store.expires_at end
+      returning value`;
+    return Number(r!.value);
+  }
+  async setNx(key: string, value: string, ttlSec: number) {
+    const r = await this.sql`
+      insert into kv_store (key, value, expires_at) values (${key}, ${value}, now() + make_interval(secs => ${ttlSec}))
+      on conflict (key) do update set value = excluded.value, expires_at = excluded.expires_at
+        where kv_store.expires_at < now()
+      returning key`;
+    return r.length === 1;
+  }
+  async get(key: string) {
+    const [r] = await this.sql<{ value: string }[]>`select value from kv_store where key = ${key} and expires_at >= now()`;
+    return r?.value ?? null;
+  }
+  async set(key: string, value: string, ttlSec: number) {
+    await this.sql`
+      insert into kv_store (key, value, expires_at) values (${key}, ${value}, now() + make_interval(secs => ${ttlSec}))
+      on conflict (key) do update set value = excluded.value, expires_at = excluded.expires_at`;
+  }
+  async del(key: string) {
+    await this.sql`delete from kv_store where key = ${key}`;
+  }
+  async close() {}
+}

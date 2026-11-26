@@ -4,9 +4,9 @@ import postgres from "postgres";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-export async function runMigrations(url: string) {
+export async function runMigrations(url: string, migrationsFolder?: string) {
   const client = postgres(url, { max: 1, onnotice: () => {} });
-  const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "migrations");
+  const dir = migrationsFolder ?? path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "migrations");
   await migrate(drizzle(client), { migrationsFolder: dir });
   await client.end();
 }

@@ -2,12 +2,13 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useAccount } from "wagmi";
 import { useSession } from "@/lib/session";
-import { demoMode } from "@/lib/config";
+import { useDemo } from "@/lib/apiMode";
 import { ConnectButton } from "./ConnectButton";
 import { Button, Card } from "./ui";
 import { Meter } from "./Meter";
 
 function DemoNote() {
+  const demoMode = useDemo();
   if (!demoMode) return null;
   return (
     <p className="mt-4 rounded-xl border border-amber/30 bg-amber/5 px-3 py-2 text-xs text-amber">
@@ -17,6 +18,7 @@ function DemoNote() {
 }
 
 export function SignInGate({ children }: { children: ReactNode }) {
+  const demoMode = useDemo();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);

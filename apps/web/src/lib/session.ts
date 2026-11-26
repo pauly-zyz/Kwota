@@ -3,13 +3,15 @@ import { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage, useSwitchChain } from "wagmi";
 import { createSiweMessage } from "viem/siwe";
 import { api, demoToken, getToken, setToken, tokenAddress } from "./api";
-import { config, demoMode } from "./config";
+import { config } from "./config";
+import { useDemo } from "./apiMode";
 
 /** Address used for "try without a wallet" in demo mode. */
 export const DEMO_GUEST = "0xdead00000000000000000000000000000000beef";
 
 /** SIWE session bound to the connected wallet. */
 export function useSession() {
+  const demoMode = useDemo();
   const { address, chainId } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { switchChainAsync } = useSwitchChain();

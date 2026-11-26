@@ -298,3 +298,16 @@ export const agentDailyUsage = pgTable("agent_daily_usage", {
   spentMicro: micro("spent_micro").notNull().default(sql`0`),
   reservedMicro: micro("reserved_micro").notNull().default(sql`0`),
 }, (t) => [primaryKey({ columns: [t.agentId, t.day] })]);
+
+// ───────────── shared KV (serverless: nonces, rate limits, caches) and generated secrets
+export const kvStore = pgTable("kv_store", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+}, (t) => [index("kv_store_expires").on(t.expiresAt)]);
+
+export const appSecrets = pgTable("app_secrets", {
+  name: text("name").primaryKey(),
+  value: text("value").notNull(),
+  createdAt: createdAt(),
+});

@@ -4,7 +4,8 @@ import { useReadContract } from "wagmi";
 import { Badge, Bar, Card, Empty, Stat } from "@/components/ui";
 import { DemoBanner } from "@/components/DemoBanner";
 import { Meter } from "@/components/Meter";
-import { config, demoMode, explorerAddr, explorerTx } from "@/lib/config";
+import { config, explorerAddr, explorerTx } from "@/lib/config";
+import { useDemo } from "@/lib/apiMode";
 import { bps, dateTime, kwota, short, token, usd } from "@/lib/format";
 import { useEpochs, useModels, useOverview, useSwaps } from "@/lib/hooks";
 
@@ -19,6 +20,7 @@ const tokenName = (a: string | null | undefined) => {
 };
 
 export default function Transparency() {
+  const demoMode = useDemo();
   const { data: o } = useOverview();
   const { data: epochs } = useEpochs();
   const { data: models } = useModels();

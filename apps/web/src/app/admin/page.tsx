@@ -7,7 +7,8 @@ import { ADMIN_ACTION_TYPES, adminDomain } from "@kwota/core/agentAuth";
 import { Badge, Button, Card, Empty, ErrorNote, Input } from "@/components/ui";
 import { SignInGate } from "@/components/SignInGate";
 import { api } from "@/lib/api";
-import { config, demoMode, explorerTx } from "@/lib/config";
+import { config, explorerTx } from "@/lib/config";
+import { useDemo } from "@/lib/apiMode";
 import { dateTime, kwota, short, token } from "@/lib/format";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,6 +35,7 @@ function useAdminAction() {
 }
 
 export default function AdminPage() {
+  const demoMode = useDemo();
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <div className="mb-6">

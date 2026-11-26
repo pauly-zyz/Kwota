@@ -16,6 +16,11 @@ export const envSchema = z.object({
   HOST: z.string().default("0.0.0.0"),
   DATABASE_URL: z.string().default("postgres://kwota:kwota@localhost:5432/kwota"),
   REDIS_URL: z.string().optional(),
+  /** shared KV backend: redis (REDIS_URL), postgres (serverless) or memory (single process / tests) */
+  KV_BACKEND: z.enum(["auto", "redis", "postgres", "memory"]).default("auto"),
+  DB_POOL_MAX: z.coerce.number().int().min(1).max(50).default(10),
+  /** generate + persist SESSION_SECRET in the database when not provided (serverless convenience) */
+  AUTO_SESSION_SECRET: bool,
   SESSION_SECRET: z.string().min(16).default("dev-only-session-secret-change-me"),
   CORS_ORIGINS: z.string().default("http://localhost:3000"),
   PUBLIC_API_URL: z.string().default("http://localhost:8787"),
@@ -67,6 +72,8 @@ export const envSchema = z.object({
 export type Env = z.infer<typeof envSchema>;
 
 export function loadEnv(src: Record<string, string | undefined> = process.env): Env {
+  // Vercel/Neon integrations expose POSTGRES_URL; accept it as DATABASE_URL
+  if (!src.DATABASE_URL && src.POSTGRES_URL) src = { ...src, DATABASE_URL: src.POSTGRES_URL };
   const parsed = envSchema.safeParse(src);
   if (!parsed.success) {
     throw new Error("Invalid environment: " + JSON.stringify(parsed.error.flatten().fieldErrors));
@@ -79,7 +86,7 @@ export function loadEnv(src: Record<string, string | undefined> = process.env): 
     if (off && !env.EXPLORER_URL) env.EXPLORER_URL = off.explorerUrl;
     if (off && !env.BLOCKSCOUT_API_URL) env.BLOCKSCOUT_API_URL = off.explorerUrl;
   }
-  if (env.NODE_ENV === "production" && env.SESSION_SECRET.startsWith("dev-only")) {
+  if (env.NODE_ENV === "production" && env.SESSION_SECRET.startsWith("dev-only") && !env.AUTO_SESSION_SECRET) {
     throw new Error("SESSION_SECRET must be set in production");
   }
   return env;

@@ -49,6 +49,20 @@ Repo sudah punya `vercel.json` di root (build `@kwota/web`, output statis `apps/
 | `NEXT_PUBLIC_VAULT_ADDRESS` | wallet/Safe vault ANT |
 | `NEXT_PUBLIC_PONS_URL`, `NEXT_PUBLIC_DEXSCREENER_URL`, `NEXT_PUBLIC_X_URL` | tautan |
 
+## 3. Backend di Vercel (project yang sama — disarankan)
+
+API ikut ter-deploy sebagai Vercel Function di `/api` (file `api/index.js`, hasil bundle `apps/api/src/vercel.ts`).
+Web otomatis memakai `/api` dan keluar dari mode demo begitu `GET /api/health` → `ready: true`.
+
+Yang perlu ada di project Vercel:
+1. **Database**: Storage → Create Database → Neon (Postgres) → Connect ke project ini (mengisi `DATABASE_URL`/`POSTGRES_URL`).
+2. **Env** `PROVIDER_API_KEY` = key penyedia model (Production). Opsional: `ADMIN_ADDRESSES`, `CRON_SECRET`, `KWOTA_TOKEN_ADDRESS`, `TREASURY_ADDRESS`.
+3. Redeploy. Migrasi, `SESSION_SECRET` (disimpan di DB), dan impor model berjalan otomatis saat start pertama.
+
+Cron harian (`/api/cron`) menjalankan epoch, membersihkan reservasi macet, dan satu putaran indexer. Di plan Hobby cron
+hanya 1×/hari — untuk indexer real-time setelah launch pakai plan Pro atau hosting proses panjang (3a/3b).
+Setelah mengubah kode API, jalankan `pnpm --filter @kwota/api bundle:vercel` dan commit `api/index.js` (dicek di CI).
+
 ## 3a. Backend sekali klik (Render)
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/pauly-zyz/Kwota)
@@ -65,7 +79,7 @@ dalam satu proses (`RUN_INDEXER`, `RUN_WORKER`), migrasi dan seed model otomatis
 Catatan: plan free Render tidur setelah 15 menit tanpa trafik (request pertama lambat) dan Postgres free kedaluwarsa setelah 30 hari —
 pindah ke plan berbayar sebelum launch. `CORS_ORIGINS` default `https://kwota*.vercel.app`; ganti dengan domain persis Anda.
 
-## 3. API + indexer + worker (hosting lain)
+## 3b. API + indexer + worker (hosting lain)
 
 Proses long-running (bukan serverless). Satu image Docker (`Dockerfile`), tiga perintah:
 

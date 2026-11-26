@@ -3,7 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Button, Card, ErrorNote } from "@/components/ui";
 import { api, getToken, tokenAddress } from "@/lib/api";
-import { config, demoMode } from "@/lib/config";
+import { config } from "@/lib/config";
+import { useDemo } from "@/lib/apiMode";
 import { mockChat } from "@/lib/mockApi";
 import { kwota } from "@/lib/format";
 
@@ -11,6 +12,7 @@ interface Msg { role: "user" | "assistant"; content: string; cost?: string }
 interface ModelList { data: { id: string; name: string; pricing: { kwota_per_mtok_input: number; kwota_per_mtok_output: number } }[] }
 
 export default function Playground() {
+  const demoMode = useDemo();
   const qc = useQueryClient();
   const models = useQuery({ queryKey: ["v1models"], queryFn: () => api<ModelList>("/v1/models", { auth: false }) });
   const [model, setModel] = useState("");
