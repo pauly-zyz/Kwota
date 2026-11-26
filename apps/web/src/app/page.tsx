@@ -1,338 +1,311 @@
 import Link from "next/link";
 import { Copy } from "@/components/ui";
 import { config } from "@/lib/config";
-import { HeroMeter } from "@/components/landing/HeroMeter";
-import { Ticker } from "@/components/landing/Ticker";
-import { Pipeline } from "@/components/landing/Pipeline";
+import { BigReadout, Mark, SegMeter, SegmentBar, Tag } from "@/components/b/parts";
+import { LiveBoard } from "@/components/b/LiveBoard";
 import { Terminal } from "@/components/landing/Terminal";
 import { AgentDeck } from "@/components/landing/AgentDeck";
-import { SplitRing } from "@/components/landing/SplitRing";
-import { CountUp, Reveal, SpotlightCard } from "@/components/landing/fx";
+import { Reveal } from "@/components/landing/fx";
 
-const faqs = [
-  { q: "What is one kwota worth?", a: "1 kwota = $1 of AI usage at the listed model price. Every request is metered per token (input × price + output × price) and deducted from your balance." },
-  { q: "How is my share calculated?", a: "Your share of an epoch's budget = your balance × the seconds you held it, divided by the same for all eligible holders. Buying right before an epoch closes earns almost nothing; holding through the whole epoch earns full weight." },
-  { q: "Who is excluded?", a: "Liquidity pool addresses, the project wallets (treasury, pool, vault, ops) and blacklisted addresses never receive kwota and never dilute holders." },
-  { q: "Can I verify the numbers?", a: "Yes. Every epoch publishes a full snapshot, its SHA-256 and a Merkle root. The open-source verifier rebuilds every allocation from on-chain Transfer events." },
-  { q: "Do I need to claim?", a: "No. Kwota lands on your wallet address automatically. Sign in with your wallet whenever you want to spend it." },
-  { q: "Does kwota expire?", a: "Unused kwota expires after a configurable number of epochs (30 by default) and flows back to the pool for everyone else." },
+const steps = [
+  { t: "Hold $KWOTA", d: "Your balance is tracked second by second. The longer you hold through an epoch, the larger your weight.", v: 6 },
+  { t: "Trades fill the pool", d: "Every buy and sell on Pons pays a fee into the project wallet. 50% is converted to stablecoins for the Kwota Pool.", v: 11 },
+  { t: "Kwota is metered out", d: "At each epoch close the pool budget is split by time-weighted balance and published with a Merkle root.", v: 16 },
+  { t: "Spend it on AI", d: "Sign in with your wallet, create an API key and call any listed model. Every token is deducted from your kwota.", v: 20 },
 ];
 
-function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-volt">
-      <span className="h-px w-6 bg-volt/60" />
-      {children}
-    </div>
-  );
-}
+const faqs = [
+  { q: "What is one kwota worth?", a: "1 kwota = $1 of AI usage at the listed model price, metered per token." },
+  { q: "How is my share calculated?", a: "Balance × seconds held during the epoch, divided by the same for all eligible holders. Snapshot sniping earns almost nothing." },
+  { q: "Who is excluded?", a: "LP pairs, the project wallets and blacklisted addresses. They never receive kwota and never dilute holders." },
+  { q: "Can I verify the numbers?", a: "Every epoch publishes its snapshot, SHA-256 and Merkle root. The open-source verifier rebuilds it from on-chain Transfer events." },
+  { q: "Do I need to claim?", a: "No. Kwota lands on your address automatically every epoch." },
+  { q: "Does kwota expire?", a: "After 30 epochs by default — unused kwota flows back to the pool for everyone else." },
+];
 
-function H2({ children }: { children: React.ReactNode }) {
-  return <h2 className="mt-4 text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-fog-100 sm:text-5xl">{children}</h2>;
-}
+const H = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <h2 className={`font-display text-[clamp(40px,7vw,96px)] font-semibold uppercase leading-[0.92] tracking-[-0.02em] text-fog-100 ${className}`}>{children}</h2>
+);
 
 export default function Home() {
   return (
-    <div className="relative">
+    <div className="relative bg-[#050505]">
       {/* ───────── HERO ───────── */}
-      <section className="relative overflow-hidden">
-        <div className="aurora absolute inset-0" />
-        <div className="grid-bg absolute inset-0 [mask-image:radial-gradient(ellipse_at_60%_30%,black,transparent_70%)]" />
-        <svg className="pointer-events-none absolute -right-40 -top-40 h-[760px] w-[760px] animate-spinSlow opacity-[0.07]" viewBox="0 0 100 100" aria-hidden>
-          <circle cx="50" cy="50" r="48" fill="none" stroke="#C8F23A" strokeWidth="0.15" strokeDasharray="0.6 1.4" />
-          <circle cx="50" cy="50" r="40" fill="none" stroke="#C8F23A" strokeWidth="0.1" />
-        </svg>
-        <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 pb-16 pt-14 md:grid-cols-[1.1fr_1fr] md:pb-24 md:pt-24">
-          <div>
-            <Reveal>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 font-mono text-[11px] text-fog backdrop-blur">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-volt opacity-60" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-volt" />
-                </span>
-                AI inference credits · live on Robinhood Chain
-              </div>
-            </Reveal>
-            <Reveal delay={80}>
-              <h1 className="mt-7 text-[44px] font-semibold leading-[0.98] tracking-[-0.045em] text-fog-100 sm:text-7xl lg:text-[84px]">
-                Your AI kwota,
-                <br />
-                <span className="text-gradient">funded by every trade.</span>
-              </h1>
-            </Reveal>
+      <section className="relative overflow-hidden border-b hair">
+        <div className="grid-bg absolute inset-0 opacity-60 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+        <div className="relative mx-auto max-w-7xl px-4 pb-10 pt-16 sm:pt-24">
+          <Reveal>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <Tag>AI inference credits · Robinhood Chain</Tag>
+              <span className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-volt">
+                <span className="h-2 w-2 bg-volt animate-pulseGlow" /> meter online
+              </span>
+            </div>
+          </Reveal>
+          <Reveal delay={80}>
+            <h1 className="mt-10 font-display text-[clamp(52px,10vw,148px)] font-semibold uppercase leading-[0.88] tracking-[-0.03em] text-fog-100">
+              Your AI <Mark>kwota</Mark>,
+              <br />
+              funded by
+              <br />
+              every trade.
+            </h1>
+          </Reveal>
+          <div className="mt-12 grid gap-10 border-t hair pt-8 md:grid-cols-[1.2fr_1fr]">
             <Reveal delay={160}>
-              <p className="mt-7 max-w-xl text-lg leading-relaxed text-fog sm:text-xl">
-                Every $KWOTA trade fills a pool of AI inference credits. Hold the token, receive kwota each epoch, and spend it on frontier
-                models — yourself, or through your own ERC-8004 agents.
+              <p className="max-w-xl font-mono text-sm leading-7 text-fog sm:text-base">
+                $KWOTA turns trading fees into metered AI usage. Hold the token, receive kwota every epoch, spend it on frontier models — yourself
+                or through your own ERC-8004 agents. Every number is public and verifiable.
               </p>
             </Reveal>
-            <Reveal delay={240}>
-              <div className="mt-9 flex flex-wrap gap-3">
-                <Link
-                  href="/app/"
-                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-volt px-7 py-3.5 font-medium text-ink shadow-[0_0_40px_-8px_rgba(200,242,58,0.7)] transition hover:shadow-[0_0_60px_-6px_rgba(200,242,58,0.9)]"
-                >
-                  Open app
-                  <span className="transition group-hover:translate-x-0.5">→</span>
+            <Reveal delay={220}>
+              <div className="flex flex-wrap items-start gap-3 md:justify-end">
+                <Link href="/app/" className="group inline-flex items-center gap-3 bg-volt px-6 py-4 font-display text-sm font-semibold uppercase tracking-[0.12em] text-ink transition hover:bg-[#d8ff4f]">
+                  Open app <span className="transition group-hover:translate-x-1">→</span>
                 </Link>
-                <Link href="/transparency/" className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-7 py-3.5 text-fog-100 backdrop-blur transition hover:border-white/25 hover:bg-white/[0.06]">
-                  See the live meter
+                <Link href="/transparency/" className="inline-flex items-center gap-3 border border-white/15 px-6 py-4 font-display text-sm font-semibold uppercase tracking-[0.12em] text-fog-100 transition hover:border-volt hover:text-volt">
+                  Live meter
                 </Link>
-              </div>
-            </Reveal>
-            <Reveal delay={320}>
-              <div className="mt-10 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[11px] uppercase tracking-[0.14em] text-fog/80">
-                {["OpenAI-compatible API", "ERC-8004 agents", "Merkle-verified epochs", "Per-token metering"].map((t) => (
-                  <span key={t} className="flex items-center gap-2">
-                    <span className="text-volt">✓</span>
-                    {t}
-                  </span>
-                ))}
               </div>
             </Reveal>
           </div>
-          <Reveal delay={200}>
-            <div className="animate-float">
-              <HeroMeter />
-            </div>
-          </Reveal>
+        </div>
+        <div className="relative mx-auto max-w-7xl px-4 pb-14">
+          <div className="flex items-end justify-between font-mono text-[11px] uppercase tracking-[0.25em] text-fog">
+            <span>kwota metered · all time</span>
+            <span className="hidden sm:inline">1 kwota = $1 of AI</span>
+          </div>
+          <div className="mt-3 overflow-hidden">
+            <BigReadout />
+          </div>
+          <p className="mt-2 text-right font-mono text-[10px] uppercase tracking-[0.2em] text-fog/50">illustrative counter</p>
         </div>
       </section>
 
-      <Ticker />
-
-      {/* ───────── NUMBERS ───────── */}
-      <section className="mx-auto max-w-6xl px-4 py-20">
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/5 bg-white/5 md:grid-cols-4">
-          {[
-            { v: 1, d: 0, pre: "$", suf: "", k: "of AI per kwota", s: "1 kwota = $1 usage" },
-            { v: 50, d: 0, pre: "", suf: "%", k: "of fees to holders", s: "metered every epoch" },
-            { v: 24, d: 0, pre: "", suf: "h", k: "epoch length", s: "time-weighted balances" },
-            { v: 100, d: 0, pre: "", suf: "%", k: "verifiable", s: "Merkle root per epoch" },
-          ].map((x) => (
-            <div key={x.k} className="bg-ink px-6 py-8">
-              <div className="font-mono text-4xl text-fog-100 sm:text-5xl">
-                <CountUp to={x.v} decimals={x.d} prefix={x.pre} suffix={x.suf} />
-              </div>
-              <div className="mt-2 text-sm text-fog-100">{x.k}</div>
-              <div className="mt-0.5 text-xs text-fog">{x.s}</div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <SegmentBar className="opacity-90" />
 
       {/* ───────── HOW IT WORKS ───────── */}
-      <section id="how" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16">
-        <Reveal>
-          <Eyebrow>How it works</Eyebrow>
-          <H2>
-            Fee <span className="text-fog">→</span> Pool <span className="text-fog">→</span> Kwota <span className="text-fog">→</span> AI
-          </H2>
-          <p className="mt-5 max-w-2xl text-lg text-fog">A simple, auditable pipeline. Every hop is recorded, signed and shown live on the transparency page.</p>
-        </Reveal>
-        <Reveal delay={100} className="mt-12">
-          <Pipeline />
-        </Reveal>
-        <div className="mt-6 grid gap-4 md:grid-cols-4">
-          {[
-            { n: "01", t: "Trade", d: "Every buy and sell of $KWOTA on Pons pays a trading fee straight into the project wallet." },
-            { n: "02", t: "Split", d: "Fees are booked into three buckets: the Kwota Pool, the public vault, and operations." },
-            { n: "03", t: "Meter", d: "Each epoch, realized pool stablecoins are metered to holders by time-weighted balance." },
-            { n: "04", t: "Use", d: "Spend kwota on AI through an OpenAI-compatible API — or hand a share to your agents." },
-          ].map((s, i) => (
-            <Reveal key={s.n} delay={i * 80}>
-              <SpotlightCard className="h-full p-6">
-                <div className="font-mono text-xs text-volt">{s.n}</div>
-                <div className="mt-4 text-xl font-medium text-fog-100">{s.t}</div>
-                <p className="mt-2 text-sm leading-relaxed text-fog">{s.d}</p>
-              </SpotlightCard>
-            </Reveal>
-          ))}
-        </div>
-        <Reveal delay={120} className="mt-6">
-          <SpotlightCard className="p-7">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-fog">The kwota formula</div>
-                <div className="mt-3 overflow-x-auto font-mono text-base text-fog-100 sm:text-lg">
-                  kwota<sub>i</sub> = budget × <span className="text-volt">Σ balance<sub>i</sub>·Δt</span> / Σ<sub>eligible</sub> balance·Δt
+      <section id="how" className="relative mx-auto max-w-7xl scroll-mt-20 px-4 py-24">
+        <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            <Reveal>
+              <Tag>01 — Mechanism</Tag>
+              <H className="mt-6">
+                How it
+                <br />
+                <Mark>works</Mark>
+              </H>
+              <p className="mt-6 max-w-md font-mono text-sm leading-7 text-fog">Four steps, fully on the record. Fees in, kwota out, every hop signed and published.</p>
+              <div className="mt-8 border hair bg-black/60 p-5 font-mono text-sm text-fog-100">
+                <div className="text-[11px] uppercase tracking-[0.2em] text-fog">formula</div>
+                <div className="mt-2 overflow-x-auto">
+                  kwota<sub>i</sub> = budget × <span className="text-volt">Σ bal<sub>i</sub>·Δt</span> / Σ bal·Δt
                 </div>
               </div>
-              <p className="max-w-sm text-sm text-fog">budget = 90% of realized, undistributed pool stablecoins + last epoch’s rounding dust. No kwota is created without real funds behind it.</p>
-            </div>
-          </SpotlightCard>
-        </Reveal>
-      </section>
-
-      {/* ───────── BENTO ───────── */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <Reveal>
-          <Eyebrow>Why KWOTA</Eyebrow>
-          <H2>Built like infrastructure, not a promise.</H2>
-        </Reveal>
-        <div className="mt-12 grid auto-rows-[minmax(180px,auto)] gap-4 md:grid-cols-6">
-          <Reveal className="md:col-span-4 md:row-span-2">
-            <SpotlightCard className="h-full p-7">
-              <div className="flex h-full flex-col">
-                <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-volt">Live, not roadmap</div>
-                <h3 className="mt-3 text-2xl font-semibold text-fog-100">Kwota for your AI agents</h3>
-                <p className="mt-2 max-w-lg text-sm text-fog">Allocate part of your kwota to agents you own in an ERC-8004 registry, set daily caps, and stop any of them in one click.</p>
-                <div className="mt-6 flex-1">
-                  <AgentDeck />
+            </Reveal>
+          </div>
+          <div className="border-t hair">
+            {steps.map((s, i) => (
+              <Reveal key={s.t} delay={i * 60}>
+                <div className="group grid grid-cols-[auto_1fr] gap-6 border-b hair py-10 sm:gap-10">
+                  <div className="font-display text-5xl font-semibold text-white/15 transition group-hover:text-volt sm:text-7xl">/{String(i + 1).padStart(2, "0")}</div>
+                  <div>
+                    <h3 className="font-display text-2xl font-semibold uppercase tracking-[-0.01em] text-fog-100 sm:text-3xl">{s.t}</h3>
+                    <p className="mt-3 max-w-md font-mono text-sm leading-7 text-fog">{s.d}</p>
+                    <div className="mt-6 max-w-sm">
+                      <SegMeter value={s.v} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </SpotlightCard>
-          </Reveal>
-          {[
-            { t: "Transparent by default", d: "Pool, fees, split, vault balance, Merkle roots and model prices — all public and live.", k: "/transparency" },
-            { t: "Time-weighted", d: "Holding longer earns more. Snapshot sniping earns almost nothing.", k: "Σ balance·Δt" },
-          ].map((b, i) => (
-            <Reveal key={b.t} delay={80 + i * 80} className="md:col-span-2">
-              <SpotlightCard className="h-full p-6">
-                <div className="font-mono text-xs text-volt">{b.k}</div>
-                <h3 className="mt-3 text-lg font-medium text-fog-100">{b.t}</h3>
-                <p className="mt-2 text-sm text-fog">{b.d}</p>
-              </SpotlightCard>
-            </Reveal>
-          ))}
-          {[
-            { t: "No claiming", d: "Kwota lands on your address automatically every epoch.", k: "auto-credit" },
-            { t: "Never undercharged", d: "Max cost is reserved up front; you pay only tokens actually used.", k: "reserve → settle" },
-            { t: "Recycled, not lost", d: "Unused kwota expires back to the pool for every other holder.", k: "30-epoch expiry" },
-          ].map((b, i) => (
-            <Reveal key={b.t} delay={80 + i * 80} className="md:col-span-2">
-              <SpotlightCard className="h-full p-6">
-                <div className="font-mono text-xs text-volt">{b.k}</div>
-                <h3 className="mt-3 text-lg font-medium text-fog-100">{b.t}</h3>
-                <p className="mt-2 text-sm text-fog">{b.d}</p>
-              </SpotlightCard>
-            </Reveal>
-          ))}
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ───────── DEVELOPERS ───────── */}
-      <section id="agents" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16">
-        <div className="grid items-center gap-12 md:grid-cols-[1fr_1.15fr]">
+      {/* ───────── THREE AUDIENCES ───────── */}
+      <section className="border-y hair">
+        <div className="mx-auto max-w-7xl px-4 py-24">
           <Reveal>
-            <Eyebrow>For builders</Eyebrow>
-            <H2>One base URL. Every model.</H2>
-            <p className="mt-5 text-lg text-fog">Point any OpenAI SDK at KWOTA and pay with kwota instead of a credit card. Agents sign each request with EIP-712 — nonce, expiry and body hash — so nothing can be replayed.</p>
-            <ul className="mt-7 space-y-3 text-sm text-fog-100">
-              {["Streaming + non-streaming chat completions", "Per-key and per-wallet rate limits", "Agent keys bound to one allocation and its daily cap", "Usage log for every request"].map((t) => (
-                <li key={t} className="flex gap-3">
-                  <span className="mt-1.5 h-1.5 w-1.5 flex-none rounded-full bg-volt" />
-                  {t}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-8 flex gap-3">
-              <Link href="/docs/" className="rounded-full border border-white/10 px-5 py-2.5 text-sm text-fog-100 hover:bg-white/5">Read the docs</Link>
-              <Link href="/app/keys/" className="rounded-full bg-white/10 px-5 py-2.5 text-sm text-fog-100 hover:bg-white/15">Get an API key</Link>
+            <Tag>02 — Who it powers</Tag>
+            <H className="mt-6">
+              <Mark>Holders.</Mark> Agents.
+              <br />
+              Builders.
+            </H>
+          </Reveal>
+          <div className="mt-14 grid border-l border-t hair md:grid-cols-3">
+            {[
+              { k: "A", t: "Holders", d: "Kwota lands on your wallet every epoch — no claim, no staking. Spend it in the playground or through an API key.", l: ["time-weighted share", "auto-credited", "30-epoch expiry → pool"] },
+              { k: "B", t: "Agents", d: "Allocate kwota to agents you own in an ERC-8004 registry. Daily caps, EIP-712 signed requests, one-click stop.", l: ["ownerOf() verified", "nonce + expiry", "reclaim anytime"] },
+              { k: "C", t: "Builders", d: "OpenAI-compatible endpoint. Point any SDK at KWOTA and pay per token in kwota instead of a credit card.", l: ["/v1/chat/completions", "streaming", "per-key rate limits"] },
+            ].map((c, i) => (
+              <Reveal key={c.t} delay={i * 80}>
+                <div className="group h-full border-b border-r hair p-8 transition hover:bg-white/[0.02]">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-fog">layer {c.k}</span>
+                    <span className="h-2 w-2 bg-white/20 transition group-hover:bg-volt" />
+                  </div>
+                  <h3 className="mt-10 font-display text-4xl font-semibold uppercase text-fog-100">{c.t}</h3>
+                  <p className="mt-4 font-mono text-sm leading-7 text-fog">{c.d}</p>
+                  <ul className="mt-8 space-y-2 font-mono text-xs uppercase tracking-[0.12em] text-fog-100">
+                    {c.l.map((x) => (
+                      <li key={x} className="flex items-center gap-3">
+                        <span className="text-volt">▸</span>
+                        {x}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ───────── AGENTS + CODE ───────── */}
+      <section id="agents" className="mx-auto max-w-7xl scroll-mt-20 px-4 py-24">
+        <Reveal>
+          <Tag>03 — In production</Tag>
+          <H className="mt-6">
+            Agents that pay
+            <br />
+            <Mark>their own way</Mark>
+          </H>
+        </Reveal>
+        <div className="mt-14 grid gap-6 lg:grid-cols-2">
+          <Reveal>
+            <div className="h-full border hair bg-black p-6">
+              <div className="mb-5 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.2em] text-fog">
+                <span>agent allocations · today</span>
+                <span className="text-volt">ERC-8004</span>
+              </div>
+              <AgentDeck />
             </div>
           </Reveal>
-          <Reveal delay={120}>
+          <Reveal delay={100}>
             <Terminal />
           </Reveal>
         </div>
       </section>
 
-      {/* ───────── TOKENOMICS ───────── */}
-      <section id="tokenomics" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16">
-        <Reveal>
-          <Eyebrow>Tokenomics</Eyebrow>
-          <H2>Where every fee goes.</H2>
-        </Reveal>
-        <div className="mt-12 grid items-center gap-8 md:grid-cols-[1fr_1.4fr]">
-          <Reveal>
-            <SplitRing />
-          </Reveal>
-          <div className="space-y-4">
-            {[
-              { pct: 50, t: "Kwota Pool", d: "Converted to stablecoins and metered out to holders as AI credits.", c: "bg-volt" },
-              { pct: 30, t: "Vault", d: "Held in a public vault anyone can check on-chain.", c: "bg-[#7FE0B8]" },
-              { pct: 20, t: "Operations", d: "Infrastructure, provider overhead and development.", c: "bg-[#3a423d]" },
-            ].map((b, i) => (
-              <Reveal key={b.t} delay={i * 80}>
-                <SpotlightCard className="p-5">
-                  <div className="flex items-center gap-5">
-                    <div className="w-20 font-mono text-3xl text-fog-100">{b.pct}%</div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 font-medium text-fog-100">
-                        <span className={`h-2.5 w-2.5 rounded-full ${b.c}`} />
-                        {b.t}
-                      </div>
-                      <p className="mt-1 text-sm text-fog">{b.d}</p>
-                    </div>
-                  </div>
-                </SpotlightCard>
-              </Reveal>
-            ))}
-            <Reveal delay={260}>
-              <div className="glass flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
-                  <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-fog">Contract · $KWOTA</div>
-                  <div className="mt-1 break-all font-mono text-sm text-fog-100">{config.token ?? "Announced at launch on Pons"}</div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {config.token && <Copy text={config.token} label="copy CA" />}
-                  {config.links.pons && <a className="rounded-md border border-line px-3 py-1 text-xs text-fog-100 hover:bg-ink-700" href={config.links.pons} target="_blank" rel="noreferrer">Pons</a>}
-                  {config.links.dexscreener && <a className="rounded-md border border-line px-3 py-1 text-xs text-fog-100 hover:bg-ink-700" href={config.links.dexscreener} target="_blank" rel="noreferrer">DexScreener</a>}
-                  {config.links.x && <a className="rounded-md border border-line px-3 py-1 text-xs text-fog-100 hover:bg-ink-700" href={config.links.x} target="_blank" rel="noreferrer">X</a>}
-                </div>
-              </div>
+      {/* ───────── LIVE BOARD ───────── */}
+      <section className="border-y hair bg-black/40">
+        <div className="mx-auto max-w-7xl px-4 py-24">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <Reveal>
+              <Tag>04 — Transparency</Tag>
+              <H className="mt-6">
+                Nothing <Mark>hidden</Mark>
+              </H>
+            </Reveal>
+            <Reveal delay={80}>
+              <Link href="/transparency/" className="inline-flex items-center gap-3 border border-white/15 px-6 py-4 font-display text-sm font-semibold uppercase tracking-[0.12em] text-fog-100 transition hover:border-volt hover:text-volt">
+                Full transparency →
+              </Link>
             </Reveal>
           </div>
+          <Reveal delay={120} className="mt-12">
+            <LiveBoard />
+          </Reveal>
         </div>
       </section>
 
-      {/* ───────── FAQ ───────── */}
-      <section className="mx-auto max-w-3xl px-4 py-16">
+      {/* ───────── TOKENOMICS ───────── */}
+      <section id="tokenomics" className="mx-auto max-w-7xl scroll-mt-20 px-4 py-24">
         <Reveal>
-          <div className="text-center">
-            <Eyebrow>FAQ</Eyebrow>
-            <H2>Questions, metered.</H2>
-          </div>
+          <Tag>05 — Fee split</Tag>
+          <H className="mt-6">Every fee, <Mark>allocated</Mark></H>
         </Reveal>
-        <div className="mt-10 space-y-3">
-          {faqs.map((f, i) => (
-            <Reveal key={f.q} delay={i * 50}>
-              <details className="glass group p-5 [&_summary::-webkit-details-marker]:hidden">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-fog-100">
-                  {f.q}
-                  <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full border border-white/10 font-mono text-fog transition group-open:rotate-45 group-open:border-volt/50 group-open:text-volt">+</span>
-                </summary>
-                <p className="mt-3 text-sm leading-relaxed text-fog">{f.a}</p>
-              </details>
+        <div className="mt-14 space-y-px">
+          {[
+            { p: 50, t: "Kwota Pool", d: "Converted to stablecoins, metered to holders as AI credits." },
+            { p: 30, t: "Vault", d: "Held publicly — readable on-chain by anyone." },
+            { p: 20, t: "Operations", d: "Infrastructure, provider overhead, development." },
+          ].map((b, i) => (
+            <Reveal key={b.t} delay={i * 80}>
+              <div className="grid items-center gap-4 border hair bg-black/40 p-6 sm:grid-cols-[140px_1fr_2fr]">
+                <div className="font-display text-6xl font-semibold text-fog-100">
+                  {b.p}
+                  <span className="text-2xl text-volt">%</span>
+                </div>
+                <div>
+                  <div className="font-display text-xl font-semibold uppercase text-fog-100">{b.t}</div>
+                  <div className="mt-1 font-mono text-xs text-fog">{b.d}</div>
+                </div>
+                <SegMeter value={b.p / 5} />
+              </div>
             </Reveal>
           ))}
         </div>
-      </section>
-
-      {/* ───────── FINAL CTA ───────── */}
-      <section className="mx-auto max-w-6xl px-4 py-20">
-        <Reveal>
-          <div className="relative overflow-hidden rounded-[2rem] border border-white/10 px-6 py-16 text-center sm:px-16 sm:py-24">
-            <div className="aurora absolute inset-0 opacity-90" />
-            <div className="dot-bg absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
-            <div className="relative">
-              <h2 className="mx-auto max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.04em] text-fog-100 sm:text-6xl">
-                Hold the token.
-                <br />
-                <span className="text-gradient">Run the models.</span>
-              </h2>
-              <p className="mx-auto mt-5 max-w-xl text-lg text-fog">Sign in with your wallet and watch your kwota fill up every epoch.</p>
-              <div className="mt-9 flex flex-wrap justify-center gap-3">
-                <Link href="/app/" className="rounded-full bg-volt px-8 py-4 font-medium text-ink shadow-[0_0_50px_-8px_rgba(200,242,58,0.8)] transition hover:shadow-[0_0_70px_-6px_rgba(200,242,58,1)]">
-                  Open app →
-                </Link>
-                <Link href="/docs/" className="rounded-full border border-white/15 bg-black/30 px-8 py-4 text-fog-100 backdrop-blur hover:bg-black/50">
-                  API docs
-                </Link>
-              </div>
+        <Reveal delay={200}>
+          <div className="mt-6 flex flex-col gap-4 border hair p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-fog">contract · $KWOTA</div>
+              <div className="mt-2 break-all font-mono text-sm text-fog-100">{config.token ?? "Announced at launch on Pons"}</div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {config.token && <Copy text={config.token} label="copy CA" />}
+              {config.links.pons && <a className="border border-white/15 px-3 py-1.5 font-mono text-xs uppercase text-fog-100 hover:border-volt" href={config.links.pons} target="_blank" rel="noreferrer">Pons</a>}
+              {config.links.dexscreener && <a className="border border-white/15 px-3 py-1.5 font-mono text-xs uppercase text-fog-100 hover:border-volt" href={config.links.dexscreener} target="_blank" rel="noreferrer">DexScreener</a>}
+              {config.links.x && <a className="border border-white/15 px-3 py-1.5 font-mono text-xs uppercase text-fog-100 hover:border-volt" href={config.links.x} target="_blank" rel="noreferrer">X</a>}
             </div>
           </div>
         </Reveal>
+      </section>
+
+      {/* ───────── FAQ ───────── */}
+      <section className="border-t hair">
+        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-24 lg:grid-cols-[0.8fr_1.2fr]">
+          <Reveal>
+            <Tag>06 — FAQ</Tag>
+            <H className="mt-6">
+              Questions,
+              <br />
+              <Mark>metered</Mark>
+            </H>
+          </Reveal>
+          <div className="border-t hair">
+            {faqs.map((f, i) => (
+              <Reveal key={f.q} delay={i * 40}>
+                <details className="group border-b hair py-6 [&_summary::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-6">
+                    <span className="flex items-baseline gap-5">
+                      <span className="font-mono text-xs text-fog">{String(i + 1).padStart(2, "0")}</span>
+                      <span className="font-display text-xl font-semibold uppercase text-fog-100 sm:text-2xl">{f.q}</span>
+                    </span>
+                    <span className="font-display text-2xl text-fog transition group-open:rotate-45 group-open:text-volt">+</span>
+                  </summary>
+                  <p className="mt-4 max-w-xl pl-10 font-mono text-sm leading-7 text-fog">{f.a}</p>
+                </details>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ───────── CTA ───────── */}
+      <section className="relative overflow-hidden border-t hair">
+        <SegmentBar segments={96} className="h-2 opacity-60" />
+        <div className="mx-auto max-w-7xl px-4 py-28">
+          <Reveal>
+            <h2 className="font-display text-[clamp(48px,9vw,140px)] font-semibold uppercase leading-[0.88] tracking-[-0.03em] text-fog-100">
+              Hold the token.
+              <br />
+              <Mark>Run the models.</Mark>
+            </h2>
+          </Reveal>
+          <Reveal delay={120}>
+            <div className="mt-12 flex flex-wrap gap-3">
+              <Link href="/app/" className="group inline-flex items-center gap-3 bg-volt px-8 py-5 font-display text-base font-semibold uppercase tracking-[0.12em] text-ink transition hover:bg-[#d8ff4f]">
+                Open app <span className="transition group-hover:translate-x-1">→</span>
+              </Link>
+              <Link href="/docs/" className="inline-flex items-center gap-3 border border-white/15 px-8 py-5 font-display text-base font-semibold uppercase tracking-[0.12em] text-fog-100 transition hover:border-volt hover:text-volt">
+                API docs
+              </Link>
+            </div>
+          </Reveal>
+        </div>
       </section>
     </div>
   );
